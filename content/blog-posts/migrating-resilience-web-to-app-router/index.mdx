@@ -1,0 +1,65 @@
+---
+title: Migrating Resilience Web to the Next.js App Router
+description: Thoughts from my recent efforts in migrating from the Next.js Pages Router to the App Router.
+date: Oct 08, 2024
+---
+
+I've recently completed migrating my [Resilience Web project](https://resilienceweb.org.uk) written in Next.js from the Pages Router to the App Router. It was quite a big piece of work ([PR #1](https://github.com/ResilienceWeb/resilience-web/pull/185), [PR #2](https://github.com/ResilienceWeb/resilience-web/pull/186)), and [PR #3](https://github.com/ResilienceWeb/resilience-web/pull/208) and it took me about 30-40 hours of work. I've encountered several issues, some of which were more difficult to solve than others, but all in all I think it was worth the effort.
+
+I will share why I believe that's the case, and also some things I learned from doing this migration.
+
+## Fewer data presence checks and conflicts
+
+Previously all the data fetching in the admin section was happening on the client (in the browser). There were also lots of permission checks like “does this user have access to edit this web/listing?”, alongside fetching of the actual web and listings, categories etc. This resulted in a cascade of API calls and overly complicated conditionals that were becoming harder and harder to maintain.
+
+```javascript
+// simplified pseudocode example
+
+if (!isLoadingPermissions || !isLoadingOwnerships || !isSignedIn) {
+  return <LoadingSpinner />
+}
+
+if (!hasOwnership && !hasPermission) {
+  navigate('/')
+}
+
+return <AdminPage />
+```
+
+With the App Router, I am now fetching the most important data on the server via React Server Components: authentication info, permissions, ownerships, as well as the webs that the user has access to. This is what the App Router pushes you to do by default.
+
+This allowed me to remove lots of “is X data loaded?” or “does Y user have permission to edit this listing?” or even “is the user logged in?” checks. All that comes preloaded when the React component tree first renders on the client. For me, this is the biggest benefit of using React Server Components.
+
+## Easier than I expected to learn the new App Router patterns
+
+When the App Router was first announced by the Next.js team and I read the docs briefly, I thought the new way of doing things was quite complicated. A new routing system, with conventions like Layout, Page, everything rendering on the server by default seemed way too complex.
+
+However, when I started working on this migration and updated the first couple of pages it didn't take me very long to wrap my head around how things work now. I guess I just needed to play around with actual code rather than just reading about it.
+
+## Learnings
+
+### Importance of preview environment working for testing before deployment
+
+I don't have a staging environment for the Resilience Web as it would increase the hosting costs significantly. However, Vercel offers preview deployments for free for every Git branch so I could make use of that - but I don't 😅 there are some issues I need to fix first but I've been putting them off.
+
+Having a preview environment would've helped me find some issues and fix them so I don't have to investigate bugs in production.
+
+### Error monitoring was crucial
+
+Sentry and Vercel logs were very useful because Next.js doesn't propagate server errors to the browser. I had quite a few errors when I first deployed:
+
+<img src="/assets/images/blog-posts/sentry-app-router.png" />
+
+### Builds are slower & Turbopack is still not ready 😑
+
+One of my main frustrations is the slower build times. I was hoping that Turbopack will work well with the App Router but it keeps throwing tantrums and cryptic errors, sometimes completely blowing up for no apparent reason.
+
+By default Next.js uses Webpack, which is the reason why the build times are so slow. To be honest I wish Next.js just migrated to using Vite, like many other frameworks do now but I understand it's not that simple to switch.
+
+## Conclusion
+
+I'm happy with the migration and I think it was worth the effort. Next.js is a great framework and the App Router is a great addition to it. I'm very curious to see how Next.js will evolve in the next major version and with React 19 coming out. However, I will definitely keep an eye on the other frameworks as well, especially Remix and Astro.
+
+## Useful links
+
+If you are considering migrating from the Pages Router to the App Router and you're not yet sure if it's worth the effort, I recommend reading the post [How I Built My Blog - App Router Edition by Josh Comeau](https://www.joshwcomeau.com/blog/how-i-built-my-blog-v2/?from=newsletter) and also [this post from Joonas](https://catjam.fi/articles/next-supabase-what-do-differently) on similar learnings from his own migration.

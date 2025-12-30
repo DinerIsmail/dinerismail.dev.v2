@@ -1,0 +1,119 @@
+---
+title: Developer Experience Deserves More Respect
+description: Spending some time improving developer experience will really pay off over time.
+date: Dec 15, 2023
+---
+
+At my previous job as a frontend engineer, we had a new developer called Jonathon who joined our team. He's very bright and eager, so he hit the ground running in no time. He started pushing tickets through with an incredible speed, and high quality code.
+
+There's something else that he also did that I hugely appreciated and started doing ever since: whenever he was frustrated by something in our developer tooling and setup he just went and fixed it. Things like:
+
+- fixed eslint misconfiguration that was meant we weren't warned about potential errors
+- introduced Prettier which removed any arguments about formatting
+- webpack configuration was improved and sped up builds
+- improved folder structure to something a lot nicer to understand and use
+- and so much more…
+
+Here's the thing - most developers simply don't pay much attention to the tools they use day-to-day. They just sit down, grab a ticket and get it done. Your engineering manager or product manager won't tell you to do it. He was the only person I met until then that put so much care into these things.
+
+Within months, I saw a clear improvement in how quickly I can get things done, and even the sheer act of coding became more joyful. All of those little things that I previously had to decide or try to remember were automated away. Hundreds of times I was likely about to introduce a bug, but it was caught by ESLint before I even committed my code. This got me hooked. I took every opportunity to watch over his shoulder when he was playing around with improving our tooling, so I can learn as much as possible.
+
+In my current team, I (believe) I am what Jonathon was for my previous team. Nothing escaped my questioning. Every time someone complained about something related to developer tooling, I fixed it (or at least tried to). Whenever I notice a mistake that can be automatically prevented, or a pain point that results in frustration or wasted time - I make note of it and I address it when I find some time in-between other tasks.
+
+Let's move onto the practical part.
+
+## Prettier
+
+Prettier is now an industry standard, and if you still rely on ESLint to format your code, consider this:
+
+- ESLint [have recently deprecated all of their formatting rules](https://eslint.org/blog/2023/10/deprecating-formatting-rules/), recommending to instead use Prettier
+- Stylelint [have also deprecated most of their stylistic rules](https://github.com/stylelint/stylelint/blob/main/docs/migration-guide/to-15.md), deferring those to Prettier
+
+A few years ago I used to be opinionated about formatting. It's quite funny when I think about it, but in fact I think the whole web dev industry was. I remember seeing lots of Twitter points arguing about meaningless differences in formatting like whether the curly brace for an if statement should go on a new line, or tabs vs spaces and so on. I don't see any of those anymore, and I think in large part that's thanks to Prettier.
+
+Let's not waste time arguing about formatting anymore, and leave that to Prettier. We have more important things to do.
+
+## ESLint
+
+Now that formatting is handled solely by Prettier, we can use ESLint for the things it is best at: preventing mistakes and ensuring consistency. I won't get into every single eslint plugin you could use, as there are so many (and do check if some of your dependencies come with certain eslint plugins, as you might be surprised).
+
+My most important lesson to share here is this: check your eslintrc config file and make sure it's correct. I've encountered so many projects with eslint config created based on incorrect assumptions. It could be that whoever set the project up copied it from somewhere else where they assumed it was set up correctly without fully understanding how it works. Spending a few extra minutes here will pay off massively over time.
+
+Here's the most common misunderstanding I've seen. Consider the snippet below that was added to the eslintrc file after installing `eslint-plugin-promise`. What do you think it actually does?
+
+```javascript
+plugins: [
+  "promise"
+]
+```
+
+Here's the answer: nothing - by itself. It only allows you to start adding rules to the `rules` section. The assumption I've seen devs make is that adding it to plugins will enable a set of recommended rules, which is incorrect. To achieve that we'd also need to add this to `extends`.
+
+```javascript
+"extends": ["plugin:promise/recommended"]
+```
+
+## Stylelint
+
+Stylelint is easy to set up, and it allows you to enforce conventions and it helps you avoid errors. There are also lots of plugins for it, for example [this one](https://github.com/RJWadley/stylelint-no-unsupported-browser-features) that looks at your `browserslist` config and lets you know when you're using a CSS feature that is not supported by some of your target browsers.
+
+## VS Code settings
+
+Many of the tools mentioned so far rely on VS Code extensions and certain VS Code settings in order to work correctly. Rather than expecting every team member and new joiner to have the appropriate settings configured, or to have them and to not accidentally change them, we can actually commit the workspace VS Code settings to source control.
+
+I've seen quite often the `.vscode` folder added to gitignore, and I don't understand why some people do that. Here's what we can add for the tools we mentioned so far to ensure they work in the current workspace:
+
+```json
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "scss.validate": false, // turns off built-in VS Code validator for SCSS
+  "css.validate": false, // turns off built-in VS Code validator for CSS
+  "stylelint.validate": ["css", "scss"],
+}
+```
+
+You can even add other settings that you can agree on as a team, for example here are some of my preferred settings:
+
+```json
+{
+  "editor.linkedEditing": true,
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.cursorBlinking": "phase",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": false,
+  "workbench.fontAliasing": "antialiased",
+  "workbench.editor.focusRecentEditorAfterClose": false, // this is really helpful if you close editor tabs with Cmd+W
+}
+```
+
+## CI/CD pipeline
+
+Whatever your CI/CD pipeline is, it's always worth spending a bit of time occasionally to look into making it faster. Here are some things to check:
+
+- does caching work correctly?
+- are tests executed in parallel?
+- are any tests flakey and cause additional delays?
+
+An hour spent looking into an issue will pay off in many hours saved over time for the entire team.
+
+## What if you face opposition?
+
+It's possible that some of your team members or your manager might think you're wasting time when looking into these. Of course, if you've been tasked with delivering an important piece of work, that should be your highest priority and not what I'm talking about here. Dev tooling improvements should not come at the expense of delivering actual value to our users. However, we all have gaps here and there, for example half an hour before a meeting which is too short to pick up a big task, but it's just the right length to look into that flakey test or to fix a misconfiguration.
+
+You might need to gain your team's trust when you start making changes like this, and it's normal to face some resistance at the beginning. Here are some tips:
+
+- Start small. If you open 1 PR that adds Stylelint, fixes some eslint config and adds VS Code settings all in one go that will make it very hard for your team-mates to review. A big PR also introduces a bigger risk, so it will be much harder to push that through. Make each PR add 1 thing and that will encounter a lot less resistance.
+- Ask for your team-mates' thoughts before you open the PR. If there are any concerns, you can address them early on and that will make it more likely to go through.
+- Give demos. For example, when I introduced Stylelint I did that first with a demo and my team-mates loved it.
+
+## Conclusion
+
+I hope this article was useful. Please consider sharing it with others and if you have any thoughts about it [message me on Twitter](https://twitter.com/DinerIsmail).

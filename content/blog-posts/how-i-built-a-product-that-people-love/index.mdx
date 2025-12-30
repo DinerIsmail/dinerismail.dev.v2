@@ -1,0 +1,80 @@
+---
+title: How I Built a Product That People Love in My Spare Time
+description: Building good software doesn't need to take that long.
+date: Apr 29, 2024
+---
+
+For more than three years I've been steadily working on building an [open-source](https://github.com/ResilienceWeb/resilience-web) platform called [Resilience Web](https://resilienceweb.org.uk) that aims to help with the discovery, collaboration and communication between activists and groups in a local area.
+
+I've been building this as the (almost) sole developer alongside a lovely team of volunteers from Cambridge, and we've recently incorporated as CIC (Community Interest Company), received a grant from Transition Together and we have big plans ahead for 2024 and further.
+
+In this post I want to share how I built this platform, the challenges I overcame as well as my learnings from the process.
+
+## 🌳 What is the Resilience Web?
+
+It's a platform used for mapping community groups, social and environmental movements charities, mutual aid groups and much more.
+
+Community champions (or anyone who wants to become one) can go and start a resilience web for their local area, start adding listings, manage categories, and invite a team of people to join and help them.
+
+Visitors can explore them, find groups to volunteer with and get in touch easily with the groups that are looking for volunteers. If a listing is missing from a web, the visitor can suggest adding one, which will then be reviewed by the web maintainers.
+
+Some of the great feedback we received:
+
+<img src="/assets/images/blog-posts/rwfeedback.png" />
+
+## 🧑‍💻 Tech Stack
+
+### 💅 Frontend
+
+I went with Next.js as my framework of choice, mainly because I started this at the beginning of 2021 and it seemed the best choice back then. It's possible that if I started this project today I would consider something like SvelteKit or Astro.
+
+*Note: I use the Next.js Pages directory. I do not intend to migrate to the Next.js App Directory/React Server Components any time soon, as it doesn't seem worth the effort at this point, and I would prefer to wait until RSC matures further before giving it a try.*
+
+The public-facing part of the platform makes heavy use of Static Site Generation (SSG). This is important because it means the content of both individual listing pages and the pages that list hundreds of listings only need to be computed at build-time, which makes the page loading time quicker and allows us to scale easily at little extra cost.
+
+I use React Query (aka Tanstack Query) to fetch and cache the data on the frontend, and I put all of that in well named custom hooks.
+
+I also use Chakra UI as a component library and styling method. I find the additional layout components and hooks it provides very useful, and the base components have a beautiful design that I don't need to change too much. Thanks to it I never get bogged down in CSS and I scaffold up UIs very quickly (e.g. it can take me less than an hour to build a full page with multiple components).
+
+### ⚙️ Backend
+
+Having picked Next.js as the framework, I am also using the Next.js API Routes feature which run on serverless functions, which together represent the API.
+
+Most of the API routes interact with a Postgresql database hosted on Digital Ocean. I use Prisma to create the data model, to manage migrations and to run queries. I'm finding Prisma very helpful at this point, as it makes it a breeze to run the migrations and write type-safe queries.
+
+### 🌐 Hosting
+
+The frontend and the API are hosted on Vercel. This wasn't a decision as much as the natural default choice since the frontend is Next.js
+
+I use Digital Ocean to host the Postgresql database and all the images. For both of these I also had the option of using AWS, but I'm trying to avoid Amazon as much as possible. (*Note: I'm aware that Vercel actually uses AWS under the hood*)
+
+## 🏃 Finding time & building quickly
+
+I don't have a lot of time to dedicate to the Resilience Web project. Currently I spend about 5 hours on this project every week (sometimes less, sometimes more). I (mostly) don't get paid for it, and I already have a full-time job that is completely separate from this project. That means I have to ruthlessly prioritise what I work on, and when I do work on it I need to build things quickly.
+
+In some ways I believe this constraint was helpful. It helps me focus on building the most important things rather than waste time on minutiae or over-engineering.
+
+Another thing that's helpful is the fact that I'm the only developer (although I did receive occasional help) so I don't spend as much time on communication, meetings and other processes that are normal and take a lot of time in a standard working environment.
+
+It's important to note that I haven't always been quick, and I did often encounter technical challenges that took considerable time to overcome. With enough time and persistence, so far I haven't encountered any problem I couldn't solve (yet).
+
+## 🎯 On being a Product Engineer
+
+As you probably gathered so far, nobody tells me *how* to build things. However, on top of that nobody tells me *what* to build either. I either build things that are popularly requested by the community, or I (or other team members) come up with ideas that we propose to the rest of the team in our regular meetings, where we prioritise the upcoming work.
+
+I really enjoy this kind of role, although I am very well aware there are many things I do not yet know when it comes to product management. I'm still learning about analytics, how to do user surveys, or simply how to communicate to users of our product to find out useful information that helps us decide what to work on next.
+
+Some resources relating to product engineering that I found useful:
+
+- [Product for Engineers newsletter](https://newsletter.posthog.com)
+- [The Product-Minded Engineer](https://blog.pragmaticengineer.com/the-product-minded-engineer)
+
+## 📌 Conclusion
+
+I love this quote from Luca Rossi:
+
+> “a side project can work as a creative outlet that just puts you in a different mindset. Your brain gets into the sort of creative problem solving mode that rescues you from working, or even thinking about work.” ([source](https://refactoring.fm/p/how-to-build-side-projects))
+
+I've learned so much since I started building the Resilience Web, which made me a better developer in my day job. But probably one of the most valuable things I've gained through it is confidence in my own ability to figure things out.
+
+If you liked this post, please share it with others, follow me on Twitter/X and feel free to get in touch anytime [@DinerIsmail](https://twitter.com/DinerIsmail) if you want to chat.

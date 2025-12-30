@@ -1,0 +1,90 @@
+---
+title: Speed Up Your Web App with Lazy Loading
+description: React Suspense, code splitting, and how to improve performance on a Single Page Application
+date: April 28, 2023
+---
+
+_First published at [tech.olioex.com](https://tech.olioex.com/react/2023/04/27/speed-up-your-web-app-with-lazy-loading.html)_
+
+Recently I started paying more attention to web performance of the Olio Volunteer Hub. I started asking questions like:
+
+> How quickly does the Volunteer Hub load on an average mobile device?
+
+The answer is 3.34s[^1]. That's quite high 🤨
+
+> How large is our Javascript bundle?
+
+The answer is 462KB compressed with Brotli. Again, that's way too big 🤨. In fact, according to [this article](https://calibreapp.com/blog/bundle-size-optimization), and even [webpack docs](https://webpack.js.org/configuration/performance/#performance-maxentrypointsize), the recommended maximum size is around 250-300KB, so we're way over that.
+
+In fact, we even get a warning from Webpack whenever we build the Volunteer Hub for production 🫣
+<img src="/assets/images/blog-posts/speed-up-your-web-app-with-lazy-loading/webpack-warning.png" />
+
+It makes sense when you think about it. It's a React Single Page Application (SPA), packed with features, animations, a lot of logic around handling global and local state and much more. However, does it need to all be downloaded, parsed all at once at the beginning? For example for someone who just visits the Login page - it's completely unnecessary to also download and parse the code for reading a PDF document or the entire logic for taking volunteer inductions. **We can instead download the Javascript code as and when we need it.**
+
+Thankfully, we now have lots of tools at our disposal that make it really easy to split our bundle into multiple 'chunks', which will be downloaded 'lazily' when they are required.
+
+## What is Code Splitting?
+
+Code splitting is a technique for breaking up large bundles of JavaScript code into smaller, more manageable chunks. By splitting up your code, you can improve the loading speed of your application, as it reduces the amount of code that needs to be loaded when a user visits your site.
+There is an [excellent course on this from Sean Larkin](https://frontendmasters.com/courses/performance-webpack/code-splitting/), the creator and maintainer of Webpack.
+
+## Enter React Suspense and Webpack
+
+React Suspense is a powerful feature that can be used together with `React.lazy()` and Webpack's `import()` to implement code splitting. It's important to note that we don't need to do anything manually - all we need to do is give Webpack an indication on which parts of the app it can split into separate chunks.
+
+Here is a simple example:
+
+```jsx
+import { lazy, Suspense } from 'react'
+
+const HeavyComponent = lazy(() => import('./HeavyComponent'))
+
+function App() {
+  return (
+    <div>
+      <StandardComponent />
+      <Suspense fallback={<div>Loading...</div>}>
+        <HeavyComponent />
+      </Suspense>
+    </div>
+  )
+}
+
+export default App
+```
+
+In this example, we define a component called "HeavyComponent" using the React.lazy() function. This tells React to lazily load the component when it is needed, rather than loading it immediately.
+
+We then wrap our component with Suspense, passing in a fallback component that will be shown while the HeavyComponent is loaded. This ensures that our users see something on the screen while they wait for the component to load.
+
+This can also be done instead at the route level. For example, the same way we wrap HeavyComponent above, we can instead wrap each of our React Router route definitions, resulting in chunks that are split by route instead.
+
+What this means for our JS bundle is that we will go from this:
+
+```javascript
+application-ea81a528f68375061b36.js - 462KB
+```
+
+to something more like this:
+
+```javascript
+application-ea81a528f68375061b36.js - 162KB
+bhe2344234.chunk.js - 35KB
+cke7834524.chunk.js - 23KB
+adf9245234.chunk.js - 39KB
+...etc
+```
+
+Those 'chunks' represent parts of our JS bundle that will only be downloaded if we actually need them. There will still be a main chunk that contains the shared code, but it will be considerably smaller than before.
+Also, those strings or random letters and numbers are hashes of the contents of the file. What's really important here, is that if the content of one file doesn't change, the hash remains the same! The reason that's so important, is that means browsers can keep using it from the cache rather than downloading them again 🥳
+
+## A few other tips
+
+- Use [Bundlephobia](https://bundlephobia.com/) to factor package size into your decision-making when picking which library to choose (e.g. until a few months ago we still had moment.js in the project, which was a whopping 72KB gzipped - as a comparison, the library we use now called luxon is 21KB gzipped)
+- Ensure your bundler is configured correctly for [tree-shaking](https://webpack.js.org/guides/tree-shaking/), which helps eliminate dead code.
+
+You may be surprised, but implementing code splitting, albeit simple, is likely to be the most impactful change we could make to improve performance (without actually removing features that is :D). If it's a low hanging fruit, let's just grab it and eat it!
+
+_Note: code splitting as described here is currently being implemented on the Volunteer Hub. I will update this post with some performance metrics once it's shipped._
+
+[^1]: This is P90, and it's from Datadog. This figure takes into account both first visits and repeat visits.

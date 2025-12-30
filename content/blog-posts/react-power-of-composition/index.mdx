@@ -1,0 +1,175 @@
+---
+title: The Power of Component Composition in React
+description: How to leverage composition and create flexible and resilient components
+date: January 27, 2023
+---
+
+One of the most challenging problems in building a complex web application is how we structure our code. Since the dawn of React, the main way of encapsulating logic and functionality became the component model. More recently, that idea has even spread to other frameworks and libraries.
+
+In this blog post I want to demonstrate why composition is a powerful tool for fighting against complexity as projects grow. It helps to break down complicated logic into easy to understand pieces.
+
+Before we get to React, here's a code snippet for a dropdown list, I'd like to know what you think is interesting or odd about it:
+
+```javascript
+<select options={[
+  {
+    value: 'value1',
+    label: 'label1'
+  },
+  {
+    value: 'value2',
+    label: 'label2'
+  },
+  {
+    value: 'value3',
+    label: 'label3'
+  }]
+} />
+```
+
+I don't know about you, but I find that way of providing the options a bit awkward. Luckily that's just made up, and in reality we can actually use the `select` element like this:
+
+```jsx
+<select>
+  <option value="value1">label1</option>
+  <option value="value2">label2</option>
+  <option value="value3">label3</option>
+</select>
+```
+
+This is actually a very common example of composition, and it's a great, simple API. Let's now consider the way we build components in React. Let's take the example of an Alert component that needs to support a few variants.
+
+```jsx
+<Alert
+  header="Success alert"
+  variant="success"
+  icon="success"
+  description="This is a success alert message"
+/>
+
+<Alert
+  header="Info alert"
+  variant="info"
+  icon="info"
+  description="This is an info alert message"
+/>
+
+<Alert
+  header="Error alert"
+  variant="error"
+  icon="error"
+  description="This is an error alert message"
+/>
+```
+
+How about if we want the icon displayed on the opposite side? We would add an `iconPosition` prop I guess 🤔
+
+```jsx
+<Alert
+  header="Error alert"
+  variant="error"
+  icon="error"
+  description="This is an error alert message"
+  iconPosition="left"
+/>
+```
+
+If you've ever built code that was used in more than one place before, then you're likely familiar with this story:
+
+1. You build a reusable bit of code (function, React component, or React hook, etc.) and share it (to co-workers or publish it as OSS).
+2. Someone approaches you with a new use case that your code doesn't quite support, but could with a little tweak.
+3. You add an argument/prop/option to your reusable code and associated logic for that use case to be supported.
+4. Repeat steps 2 and 3 a few times (or many times 😬).
+5. The reusable code is now a nightmare to use and maintain 😭
+
+_(the steps above are from [Kent Dodd's article](https://kentcdodds.com/blog/inversion-of-control))_
+
+It looks like we would quickly end up with a very complicated component, with dozens of props and lots of usages to cater for. There is another approach, however, and that is component composition.
+
+## What is Component Composition?
+
+In simple terms, it just means composing components together to form other components. In practical terms, this is mainly achieved by using the `children` prop. I believe this is a feature of React that is underused, although it enables us to create flexible components that are delightful to use.
+
+Let's see how the `Alert` component would look like if we leveraged composition:
+
+```jsx
+<Alert status="error">
+  <Icon />
+  <Alert.Title>Your browser is outdated!</Alert.Title>
+  <Alert.Description>Your Volunteer Hub experience may be degraded.</Alert.Description>
+</Alert>
+```
+
+This opens up a lot more options. We can easily extend or override functionality without changing the component logic. We have more control 🤓
+
+```jsx
+export const Alert = ({ status, children }) => {
+  return (
+    <div className={status}>
+      {children}
+    </div>
+  )
+}
+
+Alert.Title = function AlertTitle({ children }) {
+  return (
+    <span className="alert-title">{children}</span>
+  )
+}
+
+Alert.Description = function AlertDescription({ children }) {
+  return (
+    <span className="alert-description">{children}</span>
+  )
+}
+```
+
+## Inversion of Control
+
+Inversion of Control (IoC) is a design pattern that simply means (in the context of components) shifting some of the control from the component itself to where it is used.
+
+Let's take another example of a `Menu` component. A common way to build it is something like this:
+
+```jsx
+<Menu
+  button={<button>Menu</button>}
+  items={[
+    {contents: 'Download', onSelect: () => console.log('Download')},
+    {contents: 'Create a Copy', onSelect: () => console.log('Create a Copy')},
+    {contents: 'Delete', onSelect: () => console.log('Delete')},
+  ]}
+/>
+```
+
+What if we want to add a divider between some of the menu items so they are grouped? Maybe we can do that via an additional property on an item object, but that introduces yet more complexity.
+
+When creating a new component, it's worth spending some time first deciding how we want it to be used so we produce a nice API for others (or our future selves) who will use that component in the future. In this case, what if we gave some of the responsibility of rendering to the user of our component?
+
+```jsx
+<Menu>
+  <Menu.Button>Menu</Menu.Button>
+  <Menu.List>
+    <Menu.Item onSelect={() => console.log('Download')}>Download</Menu.Item>
+    <Menu.Item onSelect={() => console.log('Copy')}>Create a Copy</Menu.Item>
+    <Divider />
+    <Menu.Item onSelect={() => console.log('Delete')}>Delete</Menu.Item>
+  </Menu.List>
+</Menu>
+```
+
+This one would be a bit more complex to build than an Alert component, but the end result is highly flexible and worth the effort.
+
+## How do I achieve this?
+
+When it comes to building compound components that are a bit more complex, like the Menu example or maybe an Accordion, Tabs or Modal component we will need a bit more than just passing `children` and applying some styling. We might need shared state, or a set of functions that the sub-components have access to. Here are a few patterns you might need:
+
+- Using the Context API in the parent element to store shared state
+- Using the top-level [Children API](https://reactjs.org/docs/react-api.html) (like `Children.map`, or `Children.forEach`)
+
+## Where do I go from here?
+
+This post was only meant to give you a taste of what component composition can achieve. I didn't go into a lot of detail on how to achieve it because there are actually a lot of excellent resources out there that do a great job of explaining how to achieve it. Here are some:
+
+- [React Summit 2022 talk from Thomas Findlay](https://portal.gitnation.org/contents/composition-vs-configuration-how-to-build-flexible-resilient-and-future-proof-components)
+- [Advanced React component composition](https://frontendmastery.com/posts/advanced-react-component-composition-guide)
+- Get inspiration from UI libraries like [Chakra UI](https://chakra-ui.com/docs/components) or [Reach UI](https://reach.tech)
