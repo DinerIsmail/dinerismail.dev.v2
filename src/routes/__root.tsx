@@ -4,7 +4,6 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { ThemeProvider } from '@/components/ThemeProvider'
 import '@fontsource/source-sans-pro/400.css'
 import '@fontsource/source-sans-pro/700.css'
 import 'cal-sans'
@@ -39,32 +38,16 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                const stored = localStorage.getItem('theme');
-                if (stored === 'light') {
-                  document.documentElement.classList.remove('dark');
-                } else {
-                  document.documentElement.classList.add('dark');
-                }
-              })();
-            `,
-          }}
-        />
       </head>
       <body>
-      <ThemeProvider>
         <div className="max-w-3xl px-4 lg:px-0 mx-auto">
           <Header />
           {children}
           <Footer />
         </div>
-      </ThemeProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
