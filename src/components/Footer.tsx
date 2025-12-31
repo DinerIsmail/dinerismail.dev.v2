@@ -2,7 +2,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="flex flex-col items-start pb-8 gap-8">
+    <footer className="flex flex-col items-start pb-8 gap-8 mt-16">
       <div className="flex flex-row gap-4">
         <a
           href="https://www.codementor.io/@dinerismail?refer=badge"

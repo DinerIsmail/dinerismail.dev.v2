@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { ThemeToggle } from './ThemeToggle'
 
 export default function Header() {
   return (
@@ -14,7 +15,7 @@ export default function Header() {
             Diner Ismail
           </Link>
         </h2>
-        <div className="flex flex-row gap-8">
+        <div className="flex flex-row items-center gap-4">
           <Link
             to={"/blog" as any}
             className="header-link text-2xl font-bold hover:opacity-80 transition-opacity"
@@ -27,6 +28,7 @@ export default function Header() {
           >
             Bookmarks
           </Link>
+          <ThemeToggle />
         </div>
       </div>
     </nav>

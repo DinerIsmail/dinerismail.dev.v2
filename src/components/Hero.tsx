@@ -1,4 +1,5 @@
 import { ArrowUpRight } from 'lucide-react'
+import HeroPlay from './HeroPlay'
 
 type SocialLink = {
   href: string
@@ -26,9 +27,9 @@ export default function Hero() {
           <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
             Hi, I&apos;m Diner.
           </h1>
-          {/* Optional: replace this with a dedicated HeroPlay component later */}
+          <HeroPlay />
         </div>
-        <h2 className="text-base md:text-lg leading-relaxed md:leading-[1.75] text-balance">
+        <p className="text-base md:text-lg leading-relaxed md:leading-[1.75] text-balance">
           I&apos;m a software engineer and community tech creator building products
           that make the world a better place. I work at{' '}
           <a
@@ -50,7 +51,7 @@ export default function Hero() {
             Resilience Web
           </a>
           .
-        </h2>
+        </p>
         <div className="flex flex-row gap-3">
           {socialLinks.map(({ href, label }) => (
             <a
