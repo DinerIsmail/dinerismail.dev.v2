@@ -4,6 +4,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { MouseGlow } from '@/components/MouseGlow'
 
 import appCss from '../styles.css?url'
 
@@ -38,12 +39,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
-        <div className="max-w-3xl px-4 lg:px-0 mx-auto">
-          <Header />
-          {children}
-          <Footer />
-        </div>
+      <body className="relative">
+        <MouseGlow>
+          <div className="max-w-3xl px-4 lg:px-0 mx-auto">
+            <Header />
+            {children}
+            <Footer />
+          </div>
+        </MouseGlow>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
