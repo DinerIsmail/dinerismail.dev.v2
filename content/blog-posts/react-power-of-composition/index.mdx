@@ -1,7 +1,7 @@
 ---
 title: The Power of Component Composition in React
 description: How to leverage composition and create flexible and resilient components
-date: January 27, 2023
+date: "2023-01-27"
 ---
 
 One of the most challenging problems in building a complex web application is how we structure our code. Since the dawn of React, the main way of encapsulating logic and functionality became the component model. More recently, that idea has even spread to other frameworks and libraries.
@@ -11,20 +11,22 @@ In this blog post I want to demonstrate why composition is a powerful tool for f
 Before we get to React, here's a code snippet for a dropdown list, I'd like to know what you think is interesting or odd about it:
 
 ```javascript
-<select options={[
-  {
-    value: 'value1',
-    label: 'label1'
-  },
-  {
-    value: 'value2',
-    label: 'label2'
-  },
-  {
-    value: 'value3',
-    label: 'label3'
-  }]
-} />
+<select
+  options={[
+    {
+      value: "value1",
+      label: "label1",
+    },
+    {
+      value: "value2",
+      label: "label2",
+    },
+    {
+      value: "value3",
+      label: "label3",
+    },
+  ]}
+/>
 ```
 
 I don't know about you, but I find that way of providing the options a bit awkward. Luckily that's just made up, and in reality we can actually use the `select` element like this:
@@ -96,7 +98,9 @@ Let's see how the `Alert` component would look like if we leveraged composition:
 <Alert status="error">
   <Icon />
   <Alert.Title>Your browser is outdated!</Alert.Title>
-  <Alert.Description>Your Volunteer Hub experience may be degraded.</Alert.Description>
+  <Alert.Description>
+    Your Volunteer Hub experience may be degraded.
+  </Alert.Description>
 </Alert>
 ```
 
@@ -104,24 +108,16 @@ This opens up a lot more options. We can easily extend or override functionality
 
 ```jsx
 export const Alert = ({ status, children }) => {
-  return (
-    <div className={status}>
-      {children}
-    </div>
-  )
-}
+  return <div className={status}>{children}</div>;
+};
 
 Alert.Title = function AlertTitle({ children }) {
-  return (
-    <span className="alert-title">{children}</span>
-  )
-}
+  return <span className="alert-title">{children}</span>;
+};
 
 Alert.Description = function AlertDescription({ children }) {
-  return (
-    <span className="alert-description">{children}</span>
-  )
-}
+  return <span className="alert-description">{children}</span>;
+};
 ```
 
 ## Inversion of Control
@@ -134,9 +130,9 @@ Let's take another example of a `Menu` component. A common way to build it is so
 <Menu
   button={<button>Menu</button>}
   items={[
-    {contents: 'Download', onSelect: () => console.log('Download')},
-    {contents: 'Create a Copy', onSelect: () => console.log('Create a Copy')},
-    {contents: 'Delete', onSelect: () => console.log('Delete')},
+    { contents: "Download", onSelect: () => console.log("Download") },
+    { contents: "Create a Copy", onSelect: () => console.log("Create a Copy") },
+    { contents: "Delete", onSelect: () => console.log("Delete") },
   ]}
 />
 ```
@@ -149,10 +145,10 @@ When creating a new component, it's worth spending some time first deciding how 
 <Menu>
   <Menu.Button>Menu</Menu.Button>
   <Menu.List>
-    <Menu.Item onSelect={() => console.log('Download')}>Download</Menu.Item>
-    <Menu.Item onSelect={() => console.log('Copy')}>Create a Copy</Menu.Item>
+    <Menu.Item onSelect={() => console.log("Download")}>Download</Menu.Item>
+    <Menu.Item onSelect={() => console.log("Copy")}>Create a Copy</Menu.Item>
     <Divider />
-    <Menu.Item onSelect={() => console.log('Delete')}>Delete</Menu.Item>
+    <Menu.Item onSelect={() => console.log("Delete")}>Delete</Menu.Item>
   </Menu.List>
 </Menu>
 ```

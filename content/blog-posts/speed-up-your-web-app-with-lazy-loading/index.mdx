@@ -1,7 +1,7 @@
 ---
 title: Speed Up Your Web App with Lazy Loading
 description: React Suspense, code splitting, and how to improve performance on a Single Page Application
-date: April 28, 2023
+date: "2023-04-28"
 ---
 
 _First published at [tech.olioex.com](https://tech.olioex.com/react/2023/04/27/speed-up-your-web-app-with-lazy-loading.html)_
@@ -17,6 +17,7 @@ The answer is 3.34s[^1]. That's quite high 🤨
 The answer is 462KB compressed with Brotli. Again, that's way too big 🤨. In fact, according to [this article](https://calibreapp.com/blog/bundle-size-optimization), and even [webpack docs](https://webpack.js.org/configuration/performance/#performance-maxentrypointsize), the recommended maximum size is around 250-300KB, so we're way over that.
 
 In fact, we even get a warning from Webpack whenever we build the Volunteer Hub for production 🫣
+
 <img src="/assets/images/blog-posts/speed-up-your-web-app-with-lazy-loading/webpack-warning.png" />
 
 It makes sense when you think about it. It's a React Single Page Application (SPA), packed with features, animations, a lot of logic around handling global and local state and much more. However, does it need to all be downloaded, parsed all at once at the beginning? For example for someone who just visits the Login page - it's completely unnecessary to also download and parse the code for reading a PDF document or the entire logic for taking volunteer inductions. **We can instead download the Javascript code as and when we need it.**
@@ -35,9 +36,9 @@ React Suspense is a powerful feature that can be used together with `React.lazy(
 Here is a simple example:
 
 ```jsx
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense } from "react";
 
-const HeavyComponent = lazy(() => import('./HeavyComponent'))
+const HeavyComponent = lazy(() => import("./HeavyComponent"));
 
 function App() {
   return (
@@ -47,10 +48,10 @@ function App() {
         <HeavyComponent />
       </Suspense>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
 ```
 
 In this example, we define a component called "HeavyComponent" using the React.lazy() function. This tells React to lazily load the component when it is needed, rather than loading it immediately.

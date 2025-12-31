@@ -9,7 +9,45 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
+import { remark } from "remark";
+import { toc } from "mdast-util-toc";
 import * as z from 'zod'
+
+// Helper function to convert TOC AST to serializable object
+function tocToPlainObject(list: ReturnType<typeof toc>["map"]): any[] | null {
+  if (!list || list.type !== "list") return null;
+
+  return list.children
+    .filter((item): item is any => item.type === "listItem")
+    .map((item: any) => {
+      const paragraph = item.children?.find((child: any) => child.type === "paragraph");
+      if (!paragraph) return null;
+
+      const link = paragraph.children?.find((child: any) => child.type === "link");
+      const text = link
+        ? link.children
+            ?.filter((child: any) => child.type === "text")
+            .map((child: any) => child.value)
+            .join("") || ""
+        : paragraph.children
+            ?.filter((child: any) => child.type === "text")
+            .map((child: any) => child.value)
+            .join("") || "";
+
+      const url = link?.url || `#${text.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "")}`;
+
+      // Check for nested list (subheadings)
+      const nestedList = item.children?.find((child: any) => child.type === "list");
+      const children = nestedList ? tocToPlainObject(nestedList) : null;
+
+      return {
+        value: text,
+        url,
+        ...(children && { children }),
+      };
+    })
+    .filter((item): item is any => item !== null);
+}
 
 const posts = defineCollection({
   name: "posts",
@@ -21,6 +59,12 @@ const posts = defineCollection({
     date: z.string(),
   }),
   transform: async (document, context) => {
+    // Parse markdown to extract TOC before compilation
+    const processor = remark().use(remarkGfm);
+    const tree = processor.parse(document.content);
+    const tableOfContents = toc(tree);
+
+    // Compile MDX as usual
     const mdx = await compileMDX(context, document, {
       remarkPlugins: [remarkGfm],
       rehypePlugins: [
@@ -62,9 +106,11 @@ const posts = defineCollection({
         ],
       ],
     });
+
     return {
       ...document,
       mdx,
+      toc: tableOfContents.map ? tocToPlainObject(tableOfContents.map) : null,
     };
   },
 });

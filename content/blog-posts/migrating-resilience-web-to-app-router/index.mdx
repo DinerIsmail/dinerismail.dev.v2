@@ -1,7 +1,7 @@
 ---
 title: Migrating Resilience Web to the Next.js App Router
 description: Thoughts from my recent efforts in migrating from the Next.js Pages Router to the App Router.
-date: Oct 08, 2024
+date: "2024-10-08"
 ---
 
 I've recently completed migrating my [Resilience Web project](https://resilienceweb.org.uk) written in Next.js from the Pages Router to the App Router. It was quite a big piece of work ([PR #1](https://github.com/ResilienceWeb/resilience-web/pull/185), [PR #2](https://github.com/ResilienceWeb/resilience-web/pull/186)), and [PR #3](https://github.com/ResilienceWeb/resilience-web/pull/208) and it took me about 30-40 hours of work. I've encountered several issues, some of which were more difficult to solve than others, but all in all I think it was worth the effort.
@@ -16,14 +16,14 @@ Previously all the data fetching in the admin section was happening on the clien
 // simplified pseudocode example
 
 if (!isLoadingPermissions || !isLoadingOwnerships || !isSignedIn) {
-  return <LoadingSpinner />
+  return <LoadingSpinner />;
 }
 
 if (!hasOwnership && !hasPermission) {
-  navigate('/')
+  navigate("/");
 }
 
-return <AdminPage />
+return <AdminPage />;
 ```
 
 With the App Router, I am now fetching the most important data on the server via React Server Components: authentication info, permissions, ownerships, as well as the webs that the user has access to. This is what the App Router pushes you to do by default.

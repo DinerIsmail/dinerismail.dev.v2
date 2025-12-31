@@ -24,12 +24,12 @@ export function BlogPostCard({
         params={{ slug }}
         className={cn(
           "flex flex-col w-full p-0 md:p-4 rounded-md transition-all duration-300 ease-out",
-          "hover:bg-muted hover:scale-[1.025]",
+          "hover:bg-muted",
           "group"
         )}
       >
         <div className="flex flex-col items-start gap-2">
-          <h3 className="text-lg font-semibold group-hover:underline">
+          <h3 className="text-lg font-semibold">
             {title}
           </h3>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

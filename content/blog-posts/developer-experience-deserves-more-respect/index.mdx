@@ -1,7 +1,7 @@
 ---
 title: Developer Experience Deserves More Respect
 description: Spending some time improving developer experience will really pay off over time.
-date: Dec 15, 2023
+date: "2023-12-15"
 ---
 
 At my previous job as a frontend engineer, we had a new developer called Jonathon who joined our team. He's very bright and eager, so he hit the ground running in no time. He started pushing tickets through with an incredible speed, and high quality code.
@@ -42,9 +42,7 @@ My most important lesson to share here is this: check your eslintrc config file 
 Here's the most common misunderstanding I've seen. Consider the snippet below that was added to the eslintrc file after installing `eslint-plugin-promise`. What do you think it actually does?
 
 ```javascript
-plugins: [
-  "promise"
-]
+plugins: ["promise"];
 ```
 
 Here's the answer: nothing - by itself. It only allows you to start adding rules to the `rules` section. The assumption I've seen devs make is that adding it to plugins will enable a set of recommended rules, which is incorrect. To achieve that we'd also need to add this to `extends`.
@@ -76,7 +74,7 @@ I've seen quite often the `.vscode` folder added to gitignore, and I don't under
   },
   "scss.validate": false, // turns off built-in VS Code validator for SCSS
   "css.validate": false, // turns off built-in VS Code validator for CSS
-  "stylelint.validate": ["css", "scss"],
+  "stylelint.validate": ["css", "scss"]
 }
 ```
 
@@ -90,7 +88,7 @@ You can even add other settings that you can agree on as a team, for example her
   "editor.bracketPairColorization.enabled": true,
   "editor.guides.bracketPairs": false,
   "workbench.fontAliasing": "antialiased",
-  "workbench.editor.focusRecentEditorAfterClose": false, // this is really helpful if you close editor tabs with Cmd+W
+  "workbench.editor.focusRecentEditorAfterClose": false // this is really helpful if you close editor tabs with Cmd+W
 }
 ```
 

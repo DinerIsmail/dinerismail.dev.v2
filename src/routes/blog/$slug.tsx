@@ -2,9 +2,10 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 
 import { Mdx } from "@/components/mdx-components";
+// import { TableOfContents } from "@/components/TableOfContents";
 import { buttonVariants } from "@/components/ui/button";
 import { seo } from "@/lib/seo";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { allPosts } from "content-collections";
 
 export const Route = createFileRoute("/blog/$slug")({
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/blog/$slug")({
     meta: loaderData
       ? [
           ...seo({
-            title: `${loaderData?.post.title} | TSS Blog Starter`,
+            title: `${loaderData?.post.title} | Diner Ismail`,
             description: loaderData?.post.description,
           }),
         ]
@@ -44,30 +45,32 @@ function RouteComponent() {
           to="/blog"
           className={cn(
             buttonVariants({ variant: "ghost" }),
-            "absolute left-[-200px] top-30 hidden xl:inline-flex",
+            "absolute left-[-200px] hidden xl:inline-flex",
           )}
         >
           <ChevronLeft className="mr-2 h-4 w-4" />
           See all posts
         </Link>
-        {/* TODO:  */}
-        {/* <div className="hidden text-sm xl:block"> */}
-        {/*   <div className="sticky top-16 -mt-10 max-h-[calc(var(--vh)-4rem)] overflow-y-auto pt-10"> */}
-        {/*     <TableOfContents toc={toc} /> */}
-        {/*   </div> */}
-        {/* </div> */}
-        <div>
+        {/* TODO: make TOC display on the right side and make it sticky */}
+        {/* {post.toc && (
+          <div className="hidden text-sm xl:block">
+            <div className="sticky top-16 -mt-10 max-h-[calc(var(--vh)-4rem)] overflow-y-auto pt-10">
+              <TableOfContents toc={post.toc} />
+            </div>
+          </div>
+        )} */}
+        <div className="mb-8">
+          <h1 className="inline-block font-heading text-4xl leading-tight lg:text-5xl">
+            {post.title}
+          </h1>
           {post.date && (
             <time
               dateTime={post.date}
               className="block text-sm text-muted-foreground"
             >
-              Published on {post.date}
+              Published on {formatDate(post.date)}
             </time>
           )}
-          <h1 className="my-4 inline-block font-heading text-4xl leading-tight lg:text-5xl">
-            {post.title}
-          </h1>
         </div>
         <Mdx code={post.mdx} />
         <hr className="mt-12" />

@@ -4,10 +4,6 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import '@fontsource/source-sans-pro/400.css'
-import '@fontsource/source-sans-pro/700.css'
-import 'cal-sans'
-// import '@fontsource/cal-sans'
 
 import appCss from '../styles.css?url'
 
