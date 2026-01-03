@@ -35,7 +35,7 @@ export default function HeroPlay() {
           "flex items-center justify-center cursor-pointer",
           "rounded-full",
           "w-12 h-12 md:w-8 md:h-8",
-          "text-[#0984e3]",
+          "text-[#34d399]",
           "hover:opacity-80",
           "transition-opacity",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

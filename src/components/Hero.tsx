@@ -1,21 +1,27 @@
-import { ArrowUpRight } from 'lucide-react'
+import { FaGithub,FaGoodreads, FaLinkedin } from "react-icons/fa"
 import HeroPlay from './HeroPlay'
 
 type SocialLink = {
   href: string
   label: string
-  color?: string
+  icon: React.ComponentType<{ className?: string }>
 }
 
 const socialLinks: SocialLink[] = [
   {
-    href: '', // TODO: Add your GitHub profile URL
+    href: 'https://github.com/DinerIsmail',
     label: 'GitHub',
+    icon: FaGithub,
   },
   {
-    href: '', // TODO: Add your Twitter/X profile URL
-    label: 'Twitter',
-    color: 'twitter',
+    href: 'https://linkedin.com/in/dinerismail',
+    label: 'LinkedIn',
+    icon: FaLinkedin,
+  },
+  {
+    href: 'https://www.goodreads.com/dinerismail',
+    label: 'Goodreads',
+    icon: FaGoodreads,
   },
 ]
 
@@ -52,17 +58,17 @@ export default function Hero() {
           </a>
           .
         </p>
-        <div className="flex flex-row gap-3">
-          {socialLinks.map(({ href, label }) => (
+        <div className="flex flex-row gap-4 mt-2">
+          {socialLinks.map(({ href, label, icon: Icon }) => (
             <a
               key={label}
               href={href}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2 text-sm font-medium hover:bg-muted hover:text-foreground transition-colors"
+              aria-label={label}
+              className="text-white hover:text-accent transition-colors duration-200"
             >
-              {label}
-              <ArrowUpRight className="h-4 w-4" />
+              <Icon className="h-6 w-6" />
             </a>
           ))}
         </div>
@@ -72,7 +78,7 @@ export default function Hero() {
           <div className="overflow-hidden rounded-full">
             <img
               alt="A photo of Diner Ismail"
-              src="/assets/images/diner.jpg"
+              src="/assets/images/diner.png"
               width={224}
               height={224}
               className="w-full h-full object-cover"

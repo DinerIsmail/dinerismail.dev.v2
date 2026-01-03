@@ -9,7 +9,7 @@ export const Route = createFileRoute('/blog/')({
 function RouteComponent() {
   return (
     <>
-      <h2 className="text-2xl font-semibold">Blog</h2>
+      <h2 className="text-2xl font-semibold mb-8">Blog</h2>
       <BlogList posts={sortedPosts} />
     </>
   )
