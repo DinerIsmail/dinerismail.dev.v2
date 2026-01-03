@@ -1,4 +1,4 @@
-import { FaGithub,FaGoodreads, FaLinkedin } from "react-icons/fa"
+import { FaGithub, FaGoodreads, FaLinkedin } from 'react-icons/fa'
 import HeroPlay from './HeroPlay'
 
 type SocialLink = {
@@ -27,22 +27,22 @@ const socialLinks: SocialLink[] = [
 
 export default function Hero() {
   return (
-    <section className="w-full flex flex-col-reverse md:flex-row items-center gap-12">
-      <div className="flex flex-col items-start w-full gap-3">
-        <div className="flex w-full flex-col md:flex-row items-center md:items-center justify-center md:justify-start gap-3">
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
+    <section className="flex w-full flex-col-reverse items-center gap-12 md:flex-row">
+      <div className="flex w-full flex-col items-start gap-3">
+        <div className="flex w-full flex-col items-center justify-center gap-3 md:flex-row md:items-center md:justify-start">
+          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
             Hi, I&apos;m Diner.
           </h1>
           <HeroPlay />
         </div>
-        <p className="text-base md:text-lg leading-relaxed md:leading-[1.75] text-balance">
-          I&apos;m a software engineer and community tech creator building products
-          that make the world a better place. I work at{' '}
+        <p className="text-base leading-relaxed text-balance md:text-lg md:leading-[1.75]">
+          I&apos;m a software engineer and community tech creator building
+          products that make the world a better place. I work at{' '}
           <a
             href="https://olioex.com"
             target="_blank"
             rel="noreferrer"
-            className="underline underline-offset-4 hover:text-primary"
+            className="hover:text-primary underline underline-offset-4"
           >
             Olio
           </a>{' '}
@@ -52,13 +52,13 @@ export default function Hero() {
             href="https://resilienceweb.org.uk"
             target="_blank"
             rel="noreferrer"
-            className="underline underline-offset-4 hover:text-primary"
+            className="hover:text-primary underline underline-offset-4"
           >
             Resilience Web
           </a>
           .
         </p>
-        <div className="flex flex-row gap-4 mt-2">
+        <div className="mt-2 flex flex-row gap-4">
           {socialLinks.map(({ href, label, icon: Icon }) => (
             <a
               key={label}
@@ -66,7 +66,7 @@ export default function Hero() {
               target="_blank"
               rel="noreferrer"
               aria-label={label}
-              className="text-white hover:text-accent transition-colors duration-200"
+              className="hover:text-accent text-white transition-colors duration-200"
             >
               <Icon className="h-6 w-6" />
             </a>
@@ -74,14 +74,14 @@ export default function Hero() {
         </div>
       </div>
       <div className="relative flex justify-center pb-4">
-        <figure className="shrink-0 w-56 h-56 aspect-square">
+        <figure className="aspect-square h-56 w-56 shrink-0">
           <div className="overflow-hidden rounded-full">
             <img
               alt="A photo of Diner Ismail"
               src="/assets/images/diner.png"
               width={224}
               height={224}
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
             />
           </div>
         </figure>
@@ -89,5 +89,3 @@ export default function Hero() {
     </section>
   )
 }
-
-

@@ -1,8 +1,8 @@
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="flex flex-col items-start pb-8 gap-8 mt-16">
+    <footer className="mt-16 flex flex-col items-start gap-8 pb-8">
       <div className="flex flex-row gap-4">
         <a
           href="https://www.codementor.io/@dinerismail?refer=badge"
@@ -30,13 +30,12 @@ export default function Footer() {
           />
         </a>
       </div>
-      <hr className="w-full border-border" />
-      <div className="flex flex-col md:flex-row items-center justify-center md:justify-between w-full gap-4">
-        <p className="text-sm text-muted-foreground">
+      <hr className="border-border w-full" />
+      <div className="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:justify-between">
+        <p className="text-muted-foreground text-sm">
           © <time>{currentYear}</time> Diner Ismail
         </p>
       </div>
     </footer>
-  );
+  )
 }
-

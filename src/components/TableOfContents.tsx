@@ -1,18 +1,18 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils'
 
 type TocItem = {
-  value: string;
-  url: string;
-  children?: TocItem[];
-};
+  value: string
+  url: string
+  children?: TocItem[]
+}
 
 interface TableOfContentsProps {
-  toc: TocItem[] | null;
+  toc: TocItem[] | null
 }
 
 export function TableOfContents({ toc }: TableOfContentsProps) {
   if (!toc || toc.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -24,7 +24,7 @@ export function TableOfContents({ toc }: TableOfContentsProps) {
         ))}
       </ul>
     </nav>
-  );
+  )
 }
 
 function TocItem({ item, depth = 0 }: { item: TocItem; depth?: number }) {
@@ -33,9 +33,9 @@ function TocItem({ item, depth = 0 }: { item: TocItem; depth?: number }) {
       <a
         href={item.url}
         className={cn(
-          "block text-muted-foreground hover:text-foreground transition-colors",
-          depth === 0 && "font-medium",
-          depth > 0 && "ml-4"
+          'text-muted-foreground hover:text-foreground block transition-colors',
+          depth === 0 && 'font-medium',
+          depth > 0 && 'ml-4',
         )}
       >
         {item.value}
@@ -48,6 +48,5 @@ function TocItem({ item, depth = 0 }: { item: TocItem; depth?: number }) {
         </ul>
       )}
     </li>
-  );
+  )
 }
-

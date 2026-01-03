@@ -4,30 +4,30 @@ export function seo({
   keywords,
   image,
 }: {
-  title: string;
-  description?: string;
-  image?: string;
-  keywords?: string;
+  title: string
+  description?: string
+  image?: string
+  keywords?: string
 }) {
   const tags = [
     { title },
-    { name: "description", content: description },
-    { name: "keywords", content: keywords },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-    { name: "twitter:creator", content: "@ahmedaalliy" },
-    { name: "twitter:site", content: "@ahmedaalliy" },
-    { property: "og:type", content: "website" },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
+    { name: 'description', content: description },
+    { name: 'keywords', content: keywords },
+    { name: 'twitter:title', content: title },
+    { name: 'twitter:description', content: description },
+    { name: 'twitter:creator', content: '@dinerismail' },
+    { name: 'twitter:site', content: '@dinerismail' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:title', content: title },
+    { property: 'og:description', content: description },
     ...(image
       ? [
-          { name: "twitter:image", content: image },
-          { name: "twitter:card", content: "summary_large_image" },
-          { property: "og:image", content: image },
+          { name: 'twitter:image', content: image },
+          { name: 'twitter:card', content: 'summary_large_image' },
+          { property: 'og:image', content: image },
         ]
       : []),
-  ];
+  ]
 
-  return tags;
+  return tags
 }

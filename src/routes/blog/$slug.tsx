@@ -1,27 +1,27 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { ChevronLeft } from "lucide-react";
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { ChevronLeft } from 'lucide-react'
 
-import { Mdx } from "@/components/mdx-components";
+import { Mdx } from '@/components/mdx-components'
 // import { TableOfContents } from "@/components/TableOfContents";
-import { buttonVariants } from "@/components/ui/button";
-import { seo } from "@/lib/seo";
-import { cn, formatDate } from "@/lib/utils";
-import { allPosts } from "content-collections";
+import { buttonVariants } from '@/components/ui/button'
+import { seo } from '@/lib/seo'
+import { cn, formatDate } from '@/lib/utils'
+import { allPosts } from 'content-collections'
 
-export const Route = createFileRoute("/blog/$slug")({
+export const Route = createFileRoute('/blog/$slug')({
   beforeLoad: () => ({
     allPosts,
   }),
   loader: async ({ params, context: { allPosts } }) => {
-    const slug = params.slug;
-    const post = allPosts.find((post) => post._meta.path === slug);
+    const slug = params.slug
+    const post = allPosts.find((post) => post._meta.path === slug)
     if (!post) {
       throw redirect({
-        to: "/blog",
-      });
+        to: '/blog',
+      })
     }
 
-    return { post };
+    return { post }
   },
   head: ({ loaderData }) => ({
     meta: loaderData
@@ -34,18 +34,18 @@ export const Route = createFileRoute("/blog/$slug")({
       : [],
   }),
   component: RouteComponent,
-});
+})
 
 function RouteComponent() {
-  const { post } = Route.useLoaderData();
+  const { post } = Route.useLoaderData()
   return (
     <section className="">
-      <article className="container relative max-w-3xl">
+      <article className="relative container max-w-3xl">
         <Link
           to="/blog"
           className={cn(
-            buttonVariants({ variant: "ghost" }),
-            "absolute left-[-200px] hidden xl:inline-flex",
+            buttonVariants({ variant: 'ghost' }),
+            'absolute left-[-200px] hidden xl:inline-flex',
           )}
         >
           <ChevronLeft className="mr-2 h-4 w-4" />
@@ -60,13 +60,13 @@ function RouteComponent() {
           </div>
         )} */}
         <div className="mb-8">
-          <h1 className="inline-block font-heading text-4xl leading-tight lg:text-5xl">
+          <h1 className="font-heading inline-block text-4xl leading-tight lg:text-5xl">
             {post.title}
           </h1>
           {post.date && (
             <time
               dateTime={post.date}
-              className="block text-sm text-muted-foreground"
+              className="text-muted-foreground block text-sm"
             >
               Published on {formatDate(post.date)}
             </time>
@@ -76,12 +76,12 @@ function RouteComponent() {
         <hr className="mt-12" />
 
         <div className="flex justify-center py-6 lg:py-10">
-          <Link to="/blog" className={cn(buttonVariants({ variant: "ghost" }))}>
+          <Link to="/blog" className={cn(buttonVariants({ variant: 'ghost' }))}>
             <ChevronLeft className="mr-2 h-4 w-4" />
             See all posts
           </Link>
         </div>
       </article>
     </section>
-  );
+  )
 }

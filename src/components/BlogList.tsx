@@ -1,14 +1,14 @@
-import { BlogPostCard } from "./BlogPostCard";
-import type { Posts } from "@/lib/utils";
+import type { Posts } from '@/lib/utils'
+import { BlogPostCard } from './BlogPostCard'
 
 type BlogListProps = {
-  posts: Posts;
-};
+  posts: Posts
+}
 
 export function BlogList({ posts }: BlogListProps) {
   return (
-    <section className="flex flex-col items-start w-full gap-4">
-      <ul className="group/list flex flex-col w-full gap-8 md:gap-10">
+    <section className="flex w-full flex-col items-start gap-4">
+      <ul className="group/list flex w-full flex-col gap-8 md:gap-10">
         {posts.map((post) => (
           <li key={post._meta.path}>
             <BlogPostCard
@@ -21,5 +21,5 @@ export function BlogList({ posts }: BlogListProps) {
         ))}
       </ul>
     </section>
-  );
+  )
 }

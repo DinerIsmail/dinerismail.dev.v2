@@ -1,20 +1,20 @@
-"use client";
+'use client'
 
-import { useState, type ReactNode } from "react";
+import { useState, type ReactNode } from 'react'
 
 interface MouseGlowProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export function MouseGlow({ children }: MouseGlowProps) {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     setMousePosition({
       x: e.clientX,
       y: e.clientY + window.scrollY,
-    });
-  };
+    })
+  }
 
   return (
     <div
@@ -27,9 +27,7 @@ export function MouseGlow({ children }: MouseGlowProps) {
           background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(52, 211, 153, 0.1), transparent 80%)`,
         }}
       />
-      <div className="relative z-10">
-        {children}
-      </div>
+      <div className="relative z-10">{children}</div>
     </div>
-  );
+  )
 }

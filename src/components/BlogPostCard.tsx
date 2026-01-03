@@ -1,13 +1,13 @@
-import { Link } from "@tanstack/react-router";
-import { format } from "timeago.js";
+import { Link } from '@tanstack/react-router'
+import { format } from 'timeago.js'
 
 type BlogPostCardProps = {
-  title: string;
-  description: string;
-  slug: string;
-  date: string;
-  readingTime?: string;
-};
+  title: string
+  description: string
+  slug: string
+  date: string
+  readingTime?: string
+}
 
 export function BlogPostCard({
   title,
@@ -22,13 +22,13 @@ export function BlogPostCard({
       <Link
         to="/blog/$slug"
         params={{ slug }}
-        className="relative z-10 flex flex-col w-full p-0 rounded-md transition-all duration-300 ease-out group"
+        className="group relative z-10 flex w-full flex-col rounded-md p-0 transition-all duration-300 ease-out"
       >
         <div className="flex flex-col items-start gap-2">
-          <h3 className="text-lg font-semibold group-hover:text-accent transition-colors">
+          <h3 className="group-hover:text-accent text-lg font-semibold transition-colors">
             {title}
           </h3>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="text-muted-foreground flex items-center gap-2 text-sm">
             <span>{format(new Date(date))}</span>
             {readingTime && (
               <>
@@ -38,9 +38,8 @@ export function BlogPostCard({
             )}
           </div>
         </div>
-        <p className="mt-2 text-base text-muted-foreground">{description}</p>
+        <p className="text-muted-foreground mt-2 text-base">{description}</p>
       </Link>
     </article>
-  );
+  )
 }
-

@@ -1,6 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { BlogList } from '@/components/BlogList'
 import { sortedPosts } from '@/lib/utils'
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/blog/')({
   component: RouteComponent,
@@ -9,7 +9,7 @@ export const Route = createFileRoute('/blog/')({
 function RouteComponent() {
   return (
     <>
-      <h2 className="text-2xl font-semibold mb-8">Blog</h2>
+      <h2 className="mb-8 text-2xl font-semibold">Blog</h2>
       <BlogList posts={sortedPosts} />
     </>
   )
