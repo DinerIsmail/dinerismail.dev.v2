@@ -24,7 +24,7 @@ export function MouseGlow({ children }: MouseGlowProps) {
       <div
         className="pointer-events-none fixed inset-0 z-30 transition duration-300 lg:absolute"
         style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(52, 211, 153, 0.1), transparent 80%)`,
+          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(52, 211, 153, 0.05), transparent 80%)`,
         }}
       />
       <div className="relative z-10">{children}</div>

@@ -12,19 +12,19 @@ export default function Header() {
             Diner Ismail
           </Link>
         </h2>
-        <div className="flex flex-row items-center gap-4">
+        <div className="flex flex-row items-center gap-6">
           <Link
             to={'/blog'}
             className="header-link hover:text-accent text-2xl font-bold transition-colors"
           >
             Blog
           </Link>
-          {/* <Link
-            to={"/bookmarks" as any}
-            className="header-link text-2xl font-bold hover:text-accent transition-colors"
+          <Link
+            to="/now"
+            className="header-link hover:text-accent text-2xl font-bold transition-colors"
           >
-            Bookmarks
-          </Link> */}
+            Now
+          </Link>
         </div>
       </div>
     </nav>
