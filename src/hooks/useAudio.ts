@@ -1,5 +1,4 @@
-import * as React from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface HTMLMediaProps
   extends React.AudioHTMLAttributes<any>, React.VideoHTMLAttributes<any> {
@@ -26,7 +25,7 @@ export interface HTMLMediaControls {
 }
 
 type MediaPropsWithRef<T> = HTMLMediaProps & {
-  ref?: React.MutableRefObject<T | null>
+  ref?: React.RefObject<T | null>
 }
 
 function parseTimeRanges(ranges: any) {
