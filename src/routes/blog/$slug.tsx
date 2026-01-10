@@ -2,7 +2,7 @@ import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
 
 import { Mdx } from '@/components/mdx-components'
-// import { TableOfContents } from "@/components/TableOfContents";
+import { TableOfContents } from '@/components/TableOfContents'
 import { buttonVariants } from '@/components/ui/button'
 import { seo } from '@/lib/seo'
 import { cn, formatDate } from '@/lib/utils'
@@ -39,26 +39,19 @@ export const Route = createFileRoute('/blog/$slug')({
 function RouteComponent() {
   const { post } = Route.useLoaderData()
   return (
-    <section className="">
-      <article className="relative container max-w-3xl">
-        <Link
-          to="/blog"
-          className={cn(
-            buttonVariants({ variant: 'ghost' }),
-            'absolute left-[-200px] hidden xl:inline-flex',
-          )}
-        >
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          See all posts
-        </Link>
-        {/* TODO: make TOC display on the right side and make it sticky */}
-        {/* {post.toc && (
-          <div className="hidden text-sm xl:block">
-            <div className="sticky top-16 -mt-10 max-h-[calc(var(--vh)-4rem)] overflow-y-auto pt-10">
-              <TableOfContents toc={post.toc} />
-            </div>
-          </div>
-        )} */}
+    <section className="relative">
+      <Link
+        to="/blog"
+        className={cn(
+          buttonVariants({ variant: 'ghost' }),
+          'absolute top-0 left-[-200px] hidden xl:inline-flex',
+        )}
+      >
+        <ChevronLeft className="mr-2 h-4 w-4" />
+        See all posts
+      </Link>
+
+      <article className="max-w-3xl">
         <div className="mb-8">
           <h1 className="font-heading inline-block text-4xl leading-tight lg:text-5xl">
             {post.title}
@@ -82,6 +75,14 @@ function RouteComponent() {
           </Link>
         </div>
       </article>
+
+      {post.toc && (
+        <aside className="absolute top-0 left-[calc(100%+3rem)] hidden h-full w-64 xl:block">
+          <div className="sticky top-4 max-h-[calc(100vh-8rem)] overflow-y-auto">
+            <TableOfContents toc={post.toc} />
+          </div>
+        </aside>
+      )}
     </section>
   )
 }

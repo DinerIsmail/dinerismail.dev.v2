@@ -17,7 +17,7 @@ export function TableOfContents({ toc }: TableOfContentsProps) {
 
   return (
     <nav className="text-sm">
-      <h2 className="mb-4 font-semibold">Table of Contents</h2>
+      <h3 className="text-md! mb-4 font-semibold">Table of Contents</h3>
       <ul className="space-y-2">
         {toc.map((item) => (
           <TocItem key={item.url} item={item} />
