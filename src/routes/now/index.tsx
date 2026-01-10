@@ -10,10 +10,13 @@ function RouteComponent() {
     <div className="prose prose-lg dark:prose-invert max-w-none">
       <h1 className="mb-2">What I'm doing now</h1>
       <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-        Updated January 2nd 2026
+        Updated January 10th 2026
       </p>
       <ul className="mb-8 list-inside list-disc">
-        <li>Rebuilding this website with Tanstack Start + Tailwind/shadcn</li>
+        <li>
+          Writing some content for this website, which I want to turn into a
+          digital garden.
+        </li>
         <li>
           Working on Resilience Web and onboarding a new volunteer engineer
         </li>
@@ -21,6 +24,13 @@ function RouteComponent() {
         <li>Playing Ghost of Tsushima on PC</li>
       </ul>
       <GoodreadsWidget />
+
+      <p className="mt-8">
+        This is a "now" page, inspired by Derek Sivers.{' '}
+        <a href="https://nownownow.com/about">
+          More info here if you want to create your own.
+        </a>
+      </p>
     </div>
   )
 }
