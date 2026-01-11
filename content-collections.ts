@@ -21,6 +21,7 @@ const posts = defineCollection({
     title: z.string(),
     description: z.string(),
     date: z.string(),
+    content: z.string(),
   }),
   transform: async (document, context) => {
     // Parse markdown to extract TOC before compilation
