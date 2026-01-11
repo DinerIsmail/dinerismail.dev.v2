@@ -1,11 +1,10 @@
 import { Link } from '@tanstack/react-router'
-import { format } from 'timeago.js'
 
 type BlogPostCardProps = {
   title: string
   description: string
   slug: string
-  date: string
+  date?: string
   readingTime?: string
 }
 
@@ -13,7 +12,6 @@ export function BlogPostCard({
   title,
   description,
   slug,
-  date,
   readingTime,
 }: BlogPostCardProps) {
   return (
@@ -24,12 +22,11 @@ export function BlogPostCard({
         params={{ slug }}
         className="group relative z-10 flex w-full flex-col rounded-md p-0 transition-all duration-300 ease-out"
       >
-        <div className="flex flex-col items-start gap-2">
+        <div className="flex flex-col items-start">
           <h3 className="group-hover:text-accent text-lg font-semibold transition-colors">
             {title}
           </h3>
           <div className="text-muted-foreground flex items-center gap-2 text-sm">
-            <span>{format(new Date(date))}</span>
             {readingTime && (
               <>
                 <span className="text-muted-foreground">•</span>
