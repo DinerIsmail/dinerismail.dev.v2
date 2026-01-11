@@ -11,11 +11,11 @@ function App() {
     <div className="flex flex-col gap-12">
       <Hero />
       <div className="flex flex-col gap-4">
-        <h2 className="mb-4 text-2xl font-semibold">Recent blog posts</h2>
+        <h2 className="mb-4 text-2xl font-semibold">Recent articles</h2>
         <BlogList posts={lastFivePosts} />
         <div>
           <Link
-            to="/blog"
+            to="/articles"
             className={cn(
               'group flex items-center',
               'mt-6 ml-0',

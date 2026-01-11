@@ -36,8 +36,7 @@ export default function Hero() {
           <HeroPlay />
         </div>
         <p className="text-base leading-relaxed text-balance md:text-lg md:leading-[1.75]">
-          I&apos;m a software engineer and community tech creator building
-          products that make the world a better place. I work at{' '}
+          I&apos;m a Senior Software Engineer at{' '}
           <a
             href="https://olioex.com"
             target="_blank"
@@ -46,8 +45,7 @@ export default function Hero() {
           >
             Olio
           </a>{' '}
-          as a <strong>Senior Software Engineer</strong>, and I&apos;m a{' '}
-          <strong>co-founder and developer</strong> of{' '}
+          and a co-founder of{' '}
           <a
             href="https://resilienceweb.org.uk"
             target="_blank"
@@ -56,7 +54,8 @@ export default function Hero() {
           >
             Resilience Web
           </a>
-          .
+          . I build software in service of communities and positive social
+          change.
         </p>
         <div className="mt-2 flex flex-row gap-4">
           {socialLinks.map(({ href, label, icon: Icon }) => (

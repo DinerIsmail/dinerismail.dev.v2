@@ -9,7 +9,7 @@ import { MDXContent } from '@content-collections/mdx/react'
 import { mdxComponents } from '@prose-ui/react'
 import { allPosts } from 'content-collections'
 
-export const Route = createFileRoute('/blog/$slug')({
+export const Route = createFileRoute('/articles/$slug')({
   beforeLoad: () => ({
     allPosts,
   }),
@@ -18,7 +18,7 @@ export const Route = createFileRoute('/blog/$slug')({
     const post = allPosts.find((post) => post._meta.path === slug)
     if (!post) {
       throw redirect({
-        to: '/blog',
+        to: '/articles',
       })
     }
 
@@ -42,7 +42,7 @@ function RouteComponent() {
   return (
     <section className="relative">
       <Link
-        to="/blog"
+        to="/articles"
         className={cn(
           buttonVariants({ variant: 'ghost' }),
           'absolute top-0 left-[-200px] hidden xl:inline-flex',
@@ -70,7 +70,10 @@ function RouteComponent() {
         <hr className="mt-12" />
 
         <div className="flex justify-center py-6 lg:py-10">
-          <Link to="/blog" className={cn(buttonVariants({ variant: 'ghost' }))}>
+          <Link
+            to="/articles"
+            className={cn(buttonVariants({ variant: 'ghost' }))}
+          >
             <ChevronLeft className="mr-2 h-4 w-4" />
             See all posts
           </Link>

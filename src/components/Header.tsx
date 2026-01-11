@@ -14,10 +14,10 @@ export default function Header() {
         </h2>
         <div className="flex flex-row items-center gap-6">
           <Link
-            to={'/blog'}
+            to={'/articles'}
             className="header-link hover:text-accent text-2xl font-bold transition-colors"
           >
-            Blog
+            Articles
           </Link>
           <Link
             to="/now"

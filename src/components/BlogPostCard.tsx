@@ -19,7 +19,7 @@ export function BlogPostCard({
     <article className="group relative transition-all">
       <div className="absolute -inset-x-4 -inset-y-3 z-0 hidden rounded-md transition motion-reduce:transition-none lg:-inset-x-4 lg:block lg:group-hover:bg-slate-800/50 lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] lg:group-hover:drop-shadow-lg" />
       <Link
-        to="/blog/$slug"
+        to="/articles/$slug"
         params={{ slug }}
         className="group relative z-10 flex w-full flex-col rounded-md p-0 transition-all duration-300 ease-out"
       >
