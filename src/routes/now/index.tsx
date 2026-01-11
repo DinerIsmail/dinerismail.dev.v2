@@ -7,7 +7,7 @@ export const Route = createFileRoute('/now/')({
 
 function RouteComponent() {
   return (
-    <div className="prose prose-lg dark:prose-invert max-w-none">
+    <div className="max-w-none">
       <h1 className="mb-2">What I'm doing now</h1>
       <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
         Updated January 10th 2026

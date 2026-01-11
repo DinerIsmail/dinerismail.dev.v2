@@ -62,7 +62,7 @@ function tocToPlainObject(list: ReturnType<typeof toc>['map']): any[] | null {
 
 const posts = defineCollection({
   name: 'posts',
-  directory: 'content',
+  directory: 'content/posts',
   include: '**/*.mdx',
   schema: z.object({
     title: z.string(),
