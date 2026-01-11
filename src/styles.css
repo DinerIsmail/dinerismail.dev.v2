@@ -3,12 +3,13 @@
 @import '@prose-ui/style/prose-ui.css';
 @import 'cal-sans';
 @import '@fontsource/source-code-pro/400.css';
+@import '@fontsource-variable/montserrat';
 
 @custom-variant dark (&:is(.dark *));
 
 body {
   @apply m-0;
-  font-family: 'Source Sans Pro', system-ui, sans-serif;
+  font-family: 'Montserrat Variable', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -64,8 +65,7 @@ h1:first-of-type {
 
   /* Prose UI overrides */
   --p-body-color-bg: unset;
-  --p-body-font-family: 'Source Sans Pro', system-ui, sans-serif;
-  --p-body-font-size: 1.125rem;
+  --p-body-font-family: 'Montserrat Variable', system-ui, sans-serif;
   --p-h1-font-family: 'Cal Sans', system-ui, sans-serif;
   --p-h2-font-family: 'Cal Sans', system-ui, sans-serif;
   --p-h3-font-family: 'Cal Sans', system-ui, sans-serif;
