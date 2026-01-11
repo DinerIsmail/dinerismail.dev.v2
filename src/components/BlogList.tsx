@@ -16,6 +16,7 @@ export function BlogList({ posts }: BlogListProps) {
               description={post.description}
               slug={post._meta.path}
               date={post.date}
+              readingTime={post.readingTime}
             />
           </li>
         ))}

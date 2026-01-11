@@ -7,6 +7,7 @@ import {
   transformerNotationDiff,
 } from '@shikijs/transformers'
 import { toc } from 'mdast-util-toc'
+import readingTime from 'reading-time'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypePrettyCode from 'rehype-pretty-code'
 import rehypeSlug from 'rehype-slug'
@@ -75,6 +76,7 @@ const posts = defineCollection({
     return {
       ...document,
       mdx,
+      readingTime: readingTime(document.content).text,
       toc: tableOfContents.map ? tocToPlainObject(tableOfContents.map) : null,
     }
   },
