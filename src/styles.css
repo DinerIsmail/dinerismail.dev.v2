@@ -1,10 +1,8 @@
 @import 'tailwindcss';
-
 @import 'tw-animate-css';
-
-@import '@fontsource/source-sans-pro/400.css';
-@import '@fontsource/source-sans-pro/700.css';
+@import '@prose-ui/style/prose-ui.css';
 @import 'cal-sans';
+@import '@fontsource/source-code-pro/400.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -15,37 +13,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-family: 'Cal Sans', system-ui, sans-serif;
-  letter-spacing: 1px;
+  font-family: 'Cal Sans', system-ui, sans-serif !important;
+  letter-spacing: 1px !important;
 }
 
-h1 {
-  font-size: 2rem;
-  line-height: 1.2;
-}
-
-h2 {
-  font-size: 1.875rem;
-  line-height: 1.3;
-}
-
-h3 {
-  font-size: 1.5rem;
-}
-
-h4 {
-  font-size: 1.25rem;
+h1:first-of-type {
+  margin-top: 0 !important;
 }
 
 :root {
@@ -82,6 +61,16 @@ h4 {
   --sidebar-accent-foreground: oklch(0.25 0.02 285);
   --sidebar-border: oklch(0.9 0.005 85);
   --sidebar-ring: oklch(0.85 0.008 85);
+
+  /* Prose UI overrides */
+  --p-body-color-bg: unset;
+  --p-body-font-family: 'Source Sans Pro', system-ui, sans-serif;
+  --p-body-font-size: 1.125rem;
+  --p-h1-font-family: 'Cal Sans', system-ui, sans-serif;
+  --p-h2-font-family: 'Cal Sans', system-ui, sans-serif;
+  --p-h3-font-family: 'Cal Sans', system-ui, sans-serif;
+  --p-font-family-mono: 'Source Code Pro', monospace;
+  --default-mono-font-family: 'Source Code Pro', monospace;
 }
 
 .dark {

@@ -1,10 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
-import Hero from '@/components/Hero'
 import { BlogList } from '@/components/BlogList'
-import { lastFivePosts } from '@/lib/utils'
-import { Link } from '@tanstack/react-router'
+import Hero from '@/components/Hero'
+import { cn, lastFivePosts } from '@/lib/utils'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/')({ component: App })
 

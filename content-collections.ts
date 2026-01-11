@@ -1,5 +1,6 @@
 import { defineCollection, defineConfig } from '@content-collections/core'
 import { compileMDX } from '@content-collections/mdx'
+import { remarkPlugins } from '@prose-ui/core'
 import {
   transformerMetaHighlight,
   transformerMetaWordHighlight,
@@ -10,55 +11,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypePrettyCode from 'rehype-pretty-code'
 import rehypeSlug from 'rehype-slug'
 import { remark } from 'remark'
-import remarkGfm from 'remark-gfm'
 import * as z from 'zod'
-
-// Helper function to convert TOC AST to serializable object
-function tocToPlainObject(list: ReturnType<typeof toc>['map']): any[] | null {
-  if (!list || list.type !== 'list') return null
-
-  return list.children
-    .filter((item): item is any => item.type === 'listItem')
-    .map((item: any) => {
-      const paragraph = item.children?.find(
-        (child: any) => child.type === 'paragraph',
-      )
-      if (!paragraph) return null
-
-      const link = paragraph.children?.find(
-        (child: any) => child.type === 'link',
-      )
-      const text = link
-        ? link.children
-            ?.filter((child: any) => child.type === 'text')
-            .map((child: any) => child.value)
-            .join('') || ''
-        : paragraph.children
-            ?.filter((child: any) => child.type === 'text')
-            .map((child: any) => child.value)
-            .join('') || ''
-
-      const url =
-        link?.url ||
-        `#${text
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^\w-]/g, '')}`
-
-      // Check for nested list (subheadings)
-      const nestedList = item.children?.find(
-        (child: any) => child.type === 'list',
-      )
-      const children = nestedList ? tocToPlainObject(nestedList) : null
-
-      return {
-        value: text,
-        url,
-        ...(children && { children }),
-      }
-    })
-    .filter((item): item is any => item !== null)
-}
 
 const posts = defineCollection({
   name: 'posts',
@@ -71,13 +24,13 @@ const posts = defineCollection({
   }),
   transform: async (document, context) => {
     // Parse markdown to extract TOC before compilation
-    const processor = remark().use(remarkGfm)
+    const processor = remark()
     const tree = processor.parse(document.content)
     const tableOfContents = toc(tree)
 
     // Compile MDX as usual
     const mdx = await compileMDX(context, document, {
-      remarkPlugins: [remarkGfm],
+      remarkPlugins: remarkPlugins(),
       rehypePlugins: [
         rehypeSlug,
         [
@@ -129,3 +82,50 @@ const posts = defineCollection({
 export default defineConfig({
   collections: [posts],
 })
+
+// Helper function to convert TOC AST to serializable object
+function tocToPlainObject(list: ReturnType<typeof toc>['map']): any[] | null {
+  if (!list || list.type !== 'list') return null
+
+  return list.children
+    .filter((item): item is any => item.type === 'listItem')
+    .map((item: any) => {
+      const paragraph = item.children?.find(
+        (child: any) => child.type === 'paragraph',
+      )
+      if (!paragraph) return null
+
+      const link = paragraph.children?.find(
+        (child: any) => child.type === 'link',
+      )
+      const text = link
+        ? link.children
+            ?.filter((child: any) => child.type === 'text')
+            .map((child: any) => child.value)
+            .join('') || ''
+        : paragraph.children
+            ?.filter((child: any) => child.type === 'text')
+            .map((child: any) => child.value)
+            .join('') || ''
+
+      const url =
+        link?.url ||
+        `#${text
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w-]/g, '')}`
+
+      // Check for nested list (subheadings)
+      const nestedList = item.children?.find(
+        (child: any) => child.type === 'list',
+      )
+      const children = nestedList ? tocToPlainObject(nestedList) : null
+
+      return {
+        value: text,
+        url,
+        ...(children && { children }),
+      }
+    })
+    .filter((item): item is any => item !== null)
+}

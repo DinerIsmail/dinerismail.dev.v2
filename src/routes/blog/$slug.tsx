@@ -1,11 +1,12 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
 
-import { Mdx } from '@/components/mdx-components'
 import { TableOfContents } from '@/components/TableOfContents'
 import { buttonVariants } from '@/components/ui/button'
 import { seo } from '@/lib/seo'
 import { cn, formatDate } from '@/lib/utils'
+import { MDXContent } from '@content-collections/mdx/react'
+import { mdxComponents } from '@prose-ui/react'
 import { allPosts } from 'content-collections'
 
 export const Route = createFileRoute('/blog/$slug')({
@@ -51,7 +52,7 @@ function RouteComponent() {
         See all posts
       </Link>
 
-      <article className="max-w-3xl">
+      <article className="prose-ui max-w-3xl">
         <div className="mb-8">
           <h1 className="font-heading inline-block text-4xl leading-tight lg:text-5xl">
             {post.title}
@@ -65,7 +66,7 @@ function RouteComponent() {
             </time>
           )}
         </div>
-        <Mdx code={post.mdx} />
+        <MDXContent code={post.mdx} components={mdxComponents} />
         <hr className="mt-12" />
 
         <div className="flex justify-center py-6 lg:py-10">
