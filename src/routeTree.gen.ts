@@ -38,8 +38,8 @@ const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/articles/$slug': typeof ArticlesSlugRoute
-  '/articles': typeof ArticlesIndexRoute
-  '/now': typeof NowIndexRoute
+  '/articles/': typeof ArticlesIndexRoute
+  '/now/': typeof NowIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -56,7 +56,7 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/articles/$slug' | '/articles' | '/now'
+  fullPaths: '/' | '/articles/$slug' | '/articles/' | '/now/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/articles/$slug' | '/articles' | '/now'
   id: '__root__' | '/' | '/articles/$slug' | '/articles/' | '/now/'
@@ -81,14 +81,14 @@ declare module '@tanstack/react-router' {
     '/now/': {
       id: '/now/'
       path: '/now'
-      fullPath: '/now'
+      fullPath: '/now/'
       preLoaderRoute: typeof NowIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/articles/': {
       id: '/articles/'
       path: '/articles'
-      fullPath: '/articles'
+      fullPath: '/articles/'
       preLoaderRoute: typeof ArticlesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
