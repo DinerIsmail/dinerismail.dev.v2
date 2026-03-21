@@ -1,0 +1,77 @@
+---
+title: Rebuilding My Personal Site with TanStack Start
+description: A look at why and how I rebuilt my personal website using TanStack Start, Tailwind CSS, and shadcn/ui.
+date: '2026-03-21'
+---
+
+My personal website has gone through a few iterations over the years. The previous version was built with [Next.js](https://nextjs.org/) and [Chakra UI](https://chakra-ui.com/), and it served me well. But I'd been meaning to rebuild it for a while, and in January 2026 I finally did - this time using [TanStack Start](https://tanstack.com/start/latest), [Tailwind CSS](https://tailwindcss.com/), and [shadcn/ui](https://ui.shadcn.com/). Both repos are public if you want to poke around: [old](https://github.com/DinerIsmail/dinerismail.dev) and [new](https://github.com/DinerIsmail/dinerismail.dev.v2).
+
+This post covers what the migration involved and why I think TanStack Start is a genuinely interesting choice for a project like this.
+
+## Why I wanted to move away from the old stack
+
+There was nothing awfully wrong with the Next.js + Chakra UI setup. It worked. But a few things had been nagging at me.
+
+Chakra UI, while convenient early on, started to feel heavy for a personal site. It brought a runtime CSS-in-JS cost, a fairly opinionated component API, and a theme system that I was only using a fraction of. I also really disliked their v3 rewrite - I tried upgrading previously and it was a nightmare and I gave up everytime. As Tailwind has become my default on other projects (like [Resilience Web](https://resilienceweb.org.uk)), I found myself fighting against Chakra UI's abstractions rather than leaning on them.
+
+I was also curious about TanStack Start. I use TanStack Query at work regularly and have always found the TanStack libraries to be extremely well-designed. Start is the newer full-stack framework in that ecosystem, built on top of TanStack Router and Vite, and I wanted to give it a proper try.
+
+## What the migration involved
+
+### Routing
+
+The old site used Next.js's file-based Pages Router. The new site uses TanStack Router's file-based routing, which lives in `src/routes`. The mental model is similar enough: files map to routes, `__root.tsx` is your layout, but the API is different.
+
+One thing I appreciated immediately was how explicit the route definitions feel. Instead of leaning on Next.js conventions and magic exports like `getServerSideProps` or `getStaticProps`, TanStack Router uses a `loader` pattern that co-locates data fetching with the route itself:
+
+```tsx
+export const Route = createFileRoute('/articles/$slug')({
+  loader: async ({ params }) => {
+    // fetch or resolve your data here
+  },
+  component: ArticlePage,
+})
+```
+
+It's clear, typed, and doesn't require you to know which special export name does what.
+
+### Styling: Chakra UI to Tailwind + shadcn
+
+Every component that used Chakra's `Box`, `Flex`, `Text`, `Heading` and so on needed to be converted to plain HTML elements with Tailwind classes.
+
+The resulting code is noticeably lighter. There's no theme provider wrapping the tree, no runtime style injection, and the bundle size reflects that. shadcn/ui fills the gap for more complex components: it gives you accessible, well-built primitives that you actually own - they live in your codebase and you can modify them freely, rather than importing from a black box.
+
+If you haven't used shadcn before, the key mental shift is that it's not a component library in the traditional sense. You run a CLI command and it copies the component source into your project. That's a pattern I've come to really like.
+
+### Content: MDX pipeline
+
+The old site used a fairly manual MDX setup with some custom remark plugins. The new site uses [Content Collections](https://www.content-collections.dev/), which provides a type-safe layer on top of your MDX files. You define a collection schema and get fully-typed access to your content throughout the app.
+
+### Tooling: ESLint + Prettier to Biome
+
+I also took the opportunity to swap out ESLint and Prettier for [Biome](https://biomejs.dev/). Biome handles both linting and formatting in a single tool, and it's really fast. Configuration is a single `biome.json` file rather than multiple config files and a handful of ESLint plugins. However, I found that I didn’t get the time to properly explore Biome and what it offers, and I don’t know if I’ll get the time (or further curiosity) to do so.
+
+### Deployment: Vercel to Netlify
+
+The old site was deployed on Vercel, which is the natural home for a Next.js project. Since I was moving away from Next.js, I switched to Netlify. TanStack Start has a Netlify adapter built in (configured via `netlify.toml`), and the deployment experience has been smooth. Also, I’m trying to move everything off Vercel [because of this](https://x.com/boycatapp/status/1973056113546322279).
+
+## What I like about TanStack Start
+
+**It's built on Vite.** This is probably the single biggest practical difference from Next.js day-to-day. The dev server starts almost instantly, HMR is fast, and builds are quick. Coming from the Webpack-backed Next.js builds I mentioned in my App Router migration post, this feels like a genuine quality-of-life improvement.
+
+**The routing is excellent.** TanStack Router has first-class TypeScript support throughout: route params are typed, search params are typed, and the `Link` component will tell you at compile time if you're linking to a route that doesn't exist. This sounds like a small thing until you refactor a route and everything that links to it just... works.
+
+**It's not opinionated about your server model.** Next.js has a strong opinion about how server rendering should work (Server Components, the App Router, etc.). TanStack Start gives you server functions and loaders, and gets out of the way. For a personal site that doesn't need a complex backend, that flexibility is appealing.
+
+## Conclusion
+
+I'm happy with where the site has landed. The stack feels modern and cohesive: TanStack Start for the framework, Vite under the hood for the tooling, Tailwind for styling, shadcn for components, Content Collections for MDX, and Biome for linting and formatting. Each of those choices feels considered rather than default.
+
+If you're building something new and are open to moving beyond Next.js, TanStack Start is worth a serious look, especially if you're already using other TanStack libraries. It's also worth saying that for a project of this scale - a personal website with articles, an about page, and not much else - the choice of framework matters less than you'd think. I could have stayed on Next.js and had a perfectly good site. The rebuild was partly about curiosity and partly about having a playground for tools I wanted to understand better.
+
+As I write and post more, I'm also planning to add some more capabilities to it, like tagging and categorisation, and maybe turn it into a ✨ digital garden ✨.
+
+Both repos are open source if you want to dig into the details:
+
+- [Old site (Next.js + Chakra UI)](https://github.com/DinerIsmail/dinerismail.dev)
+- [New site (TanStack Start + Tailwind + shadcn)](https://github.com/DinerIsmail/dinerismail.dev.v2)
