@@ -83,7 +83,7 @@ const posts = defineCollection({
 })
 
 export default defineConfig({
-  collections: [posts],
+  content: [posts],
 })
 
 // Helper function to convert TOC AST to serializable object
