@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nicolo-ribaudo/oxlint-config-schema/refs/heads/main/schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn",
+    "style": "off"
+  },
+  "rules": {
+    "import/no-duplicates": "error",
+    "eslint/no-shadow": "off"
+  },
+  "ignorePatterns": ["src/routeTree.gen.ts", "src/styles.css"]
+}

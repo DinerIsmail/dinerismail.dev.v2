@@ -34,4 +34,5 @@
     "source.organizeImports": "explicit"
   },
   "editor.formatOnSave": true,
+  "oxc.lint.enable": true
 }
