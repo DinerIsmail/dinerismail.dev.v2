@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
 
 import { TableOfContents } from '@/components/TableOfContents'

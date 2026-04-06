@@ -50,12 +50,22 @@ const useSetState = <T extends object>(
       Object.assign(
         {},
         prevState,
-        patch instanceof Function ? patch(prevState) : patch,
+        typeof patch === 'function' ? patch(prevState) : patch,
       ),
     )
   }, [])
 
   return [state, setState]
+}
+
+const wrapEvent = (userEvent: any, proxyEvent?: any) => {
+  return (event: any) => {
+    try {
+      if (proxyEvent) proxyEvent(event)
+    } finally {
+      if (userEvent) userEvent(event)
+    }
+  }
 }
 
 function createHTMLMediaHook<T extends HTMLAudioElement | HTMLVideoElement>(
@@ -83,15 +93,6 @@ function createHTMLMediaHook<T extends HTMLAudioElement | HTMLVideoElement>(
     })
     const ref = useRef<T | null>(null)
 
-    const wrapEvent = (userEvent: any, proxyEvent?: any) => {
-      return (event: any) => {
-        try {
-          proxyEvent && proxyEvent(event)
-        } finally {
-          userEvent && userEvent(event)
-        }
-      }
-    }
 
     const onPlay = () => setState({ paused: false })
     const onPlaying = () => setState({ playing: true })

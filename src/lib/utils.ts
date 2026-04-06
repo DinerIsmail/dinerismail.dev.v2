@@ -8,18 +8,17 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(input: string | number): string {
-  const date = new Date(input);
-  return date.toLocaleDateString("en-GB", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const date = new Date(input)
+  return date.toLocaleDateString('en-GB', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })
 }
 
-export const sortedPosts = allPosts.sort(
-  (a, b) =>
-    new Date(b.date).getTime() - new Date(a.date).getTime(),
-);
+export const sortedPosts = allPosts.toSorted(
+  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+)
 
 export const lastFivePosts = sortedPosts.slice(0, 4)
 
