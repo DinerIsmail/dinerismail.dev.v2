@@ -18,6 +18,12 @@ export default function Header() {
         >
           Articles
         </Link>
+        <Link
+          to={'/books'}
+          className="header-link hover:text-accent text-2xl font-bold transition-colors"
+        >
+          Books
+        </Link>
         {/*<Link
           to="/now"
           className="header-link hover:text-accent text-2xl font-bold transition-colors"

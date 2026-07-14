@@ -8,7 +8,8 @@
   },
   "rules": {
     "import/no-duplicates": "error",
-    "eslint/no-shadow": "off"
+    "eslint/no-shadow": "off",
+    "eslint/no-underscore-dangle": "off"
   },
   "ignorePatterns": ["src/routeTree.gen.ts", "src/styles.css"]
 }

@@ -1,4 +1,12 @@
-import { defineCollection, defineConfig } from '@content-collections/core'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
+import {
+  defineCollection,
+  defineConfig,
+  type Context,
+  type Meta,
+} from '@content-collections/core'
 import { compileMDX } from '@content-collections/mdx'
 import { remarkPlugins } from '@prose-ui/core'
 import {
@@ -14,6 +22,99 @@ import rehypeSlug from 'rehype-slug'
 import { remark } from 'remark'
 import * as z from 'zod'
 
+type MdxDocument = { content: string; _meta: Meta }
+
+async function transformMdx<T extends MdxDocument>(
+  document: T,
+  context: Context,
+) {
+  // Parse markdown to extract TOC before compilation
+  const processor = remark()
+  const tree = processor.parse(document.content)
+  const tableOfContents = toc(tree)
+
+  // Compile MDX as usual
+  const mdx = await compileMDX(context, document, {
+    remarkPlugins: remarkPlugins(),
+    rehypePlugins: [
+      rehypeSlug,
+      [
+        rehypePrettyCode,
+        {
+          theme: 'material-theme-palenight',
+          transformers: [
+            transformerMetaHighlight(),
+            transformerMetaWordHighlight(),
+            transformerNotationDiff({
+              matchAlgorithm: 'v3',
+            }),
+          ],
+          onVisitLine(node: any) {
+            // Prevent lines from collapsing in `display: grid` mode, and allow empty
+            // lines to be copy/pasted
+            if (node.children.length === 0) {
+              node.children = [{ type: 'text', value: ' ' }]
+            }
+          },
+          onVisitHighlightedLine(node: any) {
+            node.properties.className.push('line--highlighted')
+          },
+          onVisitHighlightedWord(node: any) {
+            node.properties.className = ['word--highlighted']
+          },
+        },
+      ],
+      [
+        rehypeAutolinkHeadings,
+        {
+          properties: {
+            className: ['subheading-anchor'],
+            ariaLabel: 'Link to section',
+          },
+        },
+      ],
+    ],
+  })
+
+  return {
+    ...document,
+    mdx,
+    readingTime: readingTime(document.content).text,
+    toc: tableOfContents.map ? tocToPlainObject(tableOfContents.map) : null,
+  }
+}
+
+// Fetch a book cover from the Open Library Covers API into public/assets/covers,
+// keyed by slug so it only downloads once and gets committed with the repo.
+async function fetchCover(isbn: string, slug: string): Promise<string | null> {
+  const publicUrl = `/assets/covers/${slug}.jpg`
+  const filePath = path.join('public', 'assets', 'covers', `${slug}.jpg`)
+  try {
+    await fs.access(filePath)
+    return publicUrl
+  } catch {
+    // Not cached yet, fetch below
+  }
+  try {
+    const response = await fetch(
+      `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false`,
+    )
+    if (!response.ok) {
+      console.warn(`No Open Library cover found for ISBN ${isbn} (${slug})`)
+      return null
+    }
+    const buffer = Buffer.from(await response.arrayBuffer())
+    // Open Library occasionally serves a tiny placeholder instead of a 404
+    if (buffer.length < 1000) return null
+    await fs.mkdir(path.dirname(filePath), { recursive: true })
+    await fs.writeFile(filePath, buffer)
+    return publicUrl
+  } catch (error) {
+    console.warn(`Failed to fetch cover for ISBN ${isbn} (${slug})`, error)
+    return null
+  }
+}
+
 const posts = defineCollection({
   name: 'posts',
   directory: 'content/posts',
@@ -24,66 +125,33 @@ const posts = defineCollection({
     date: z.string(),
     content: z.string(),
   }),
+  transform: transformMdx,
+})
+
+const books = defineCollection({
+  name: 'books',
+  directory: 'content/books',
+  include: '**/*.mdx',
+  schema: z.object({
+    title: z.string(),
+    author: z.string(),
+    description: z.string(),
+    date: z.string(),
+    content: z.string(),
+    rating: z.number().min(1).max(5).optional(),
+    isbn: z.string().optional(),
+  }),
   transform: async (document, context) => {
-    // Parse markdown to extract TOC before compilation
-    const processor = remark()
-    const tree = processor.parse(document.content)
-    const tableOfContents = toc(tree)
-
-    // Compile MDX as usual
-    const mdx = await compileMDX(context, document, {
-      remarkPlugins: remarkPlugins(),
-      rehypePlugins: [
-        rehypeSlug,
-        [
-          rehypePrettyCode,
-          {
-            theme: 'material-theme-palenight',
-            transformers: [
-              transformerMetaHighlight(),
-              transformerMetaWordHighlight(),
-              transformerNotationDiff({
-                matchAlgorithm: 'v3',
-              }),
-            ],
-            onVisitLine(node: any) {
-              // Prevent lines from collapsing in `display: grid` mode, and allow empty
-              // lines to be copy/pasted
-              if (node.children.length === 0) {
-                node.children = [{ type: 'text', value: ' ' }]
-              }
-            },
-            onVisitHighlightedLine(node: any) {
-              node.properties.className.push('line--highlighted')
-            },
-            onVisitHighlightedWord(node: any) {
-              node.properties.className = ['word--highlighted']
-            },
-          },
-        ],
-        [
-          rehypeAutolinkHeadings,
-          {
-            properties: {
-              className: ['subheading-anchor'],
-              ariaLabel: 'Link to section',
-            },
-          },
-        ],
-      ],
-    })
-
-    return {
-      ...document,
-      mdx,
-      readingTime: readingTime(document.content).text,
-      toc: tableOfContents.map ? tocToPlainObject(tableOfContents.map) : null,
-    }
+    const transformed = await transformMdx(document, context)
+    const coverImage = document.isbn
+      ? await fetchCover(document.isbn, document._meta.path)
+      : null
+    return { ...transformed, coverImage }
   },
 })
 
 export default defineConfig({
-  content: [posts],
+  content: [posts, books],
 })
 
 // Helper function to convert TOC AST to serializable object

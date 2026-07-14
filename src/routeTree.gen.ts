@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as NowIndexRouteImport } from './routes/now/index'
+import { Route as BooksIndexRouteImport } from './routes/books/index'
 import { Route as ArticlesIndexRouteImport } from './routes/articles/index'
+import { Route as BooksSlugRouteImport } from './routes/books/$slug'
 import { Route as ArticlesSlugRouteImport } from './routes/articles/$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -24,9 +26,19 @@ const NowIndexRoute = NowIndexRouteImport.update({
   path: '/now/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BooksIndexRoute = BooksIndexRouteImport.update({
+  id: '/books/',
+  path: '/books/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
   id: '/articles/',
   path: '/articles/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BooksSlugRoute = BooksSlugRouteImport.update({
+  id: '/books/$slug',
+  path: '/books/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
@@ -38,34 +50,55 @@ const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/books/$slug': typeof BooksSlugRoute
   '/articles/': typeof ArticlesIndexRoute
+  '/books/': typeof BooksIndexRoute
   '/now/': typeof NowIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/books/$slug': typeof BooksSlugRoute
   '/articles': typeof ArticlesIndexRoute
+  '/books': typeof BooksIndexRoute
   '/now': typeof NowIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/books/$slug': typeof BooksSlugRoute
   '/articles/': typeof ArticlesIndexRoute
+  '/books/': typeof BooksIndexRoute
   '/now/': typeof NowIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/articles/$slug' | '/articles/' | '/now/'
+  fullPaths:
+    | '/'
+    | '/articles/$slug'
+    | '/books/$slug'
+    | '/articles/'
+    | '/books/'
+    | '/now/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/articles/$slug' | '/articles' | '/now'
-  id: '__root__' | '/' | '/articles/$slug' | '/articles/' | '/now/'
+  to: '/' | '/articles/$slug' | '/books/$slug' | '/articles' | '/books' | '/now'
+  id:
+    | '__root__'
+    | '/'
+    | '/articles/$slug'
+    | '/books/$slug'
+    | '/articles/'
+    | '/books/'
+    | '/now/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArticlesSlugRoute: typeof ArticlesSlugRoute
+  BooksSlugRoute: typeof BooksSlugRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
+  BooksIndexRoute: typeof BooksIndexRoute
   NowIndexRoute: typeof NowIndexRoute
 }
 
@@ -85,11 +118,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NowIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/books/': {
+      id: '/books/'
+      path: '/books'
+      fullPath: '/books/'
+      preLoaderRoute: typeof BooksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/articles/': {
       id: '/articles/'
       path: '/articles'
       fullPath: '/articles/'
       preLoaderRoute: typeof ArticlesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/books/$slug': {
+      id: '/books/$slug'
+      path: '/books/$slug'
+      fullPath: '/books/$slug'
+      preLoaderRoute: typeof BooksSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/articles/$slug': {
@@ -105,7 +152,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArticlesSlugRoute: ArticlesSlugRoute,
+  BooksSlugRoute: BooksSlugRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,
+  BooksIndexRoute: BooksIndexRoute,
   NowIndexRoute: NowIndexRoute,
 }
 export const routeTree = rootRouteImport

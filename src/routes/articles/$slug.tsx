@@ -5,8 +5,8 @@ import { TableOfContents } from '@/components/TableOfContents'
 import { buttonVariants } from '@/components/ui/button'
 import { seo } from '@/lib/seo'
 import { cn, formatDate } from '@/lib/utils'
+import { proseMdxComponents } from '@/components/prose-mdx-components'
 import { MDXContent } from '@content-collections/mdx/react'
-import { mdxComponents } from '@prose-ui/react'
 import { allPosts } from 'content-collections'
 
 export const Route = createFileRoute('/articles/$slug')({
@@ -66,7 +66,7 @@ function RouteComponent() {
             </time>
           )}
         </div>
-        <MDXContent code={post.mdx} components={mdxComponents} />
+        <MDXContent code={post.mdx} components={proseMdxComponents} />
         <hr className="mt-12" />
 
         <div className="flex justify-center py-6 lg:py-10">
