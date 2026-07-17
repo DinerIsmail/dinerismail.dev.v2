@@ -115,6 +115,38 @@ async function fetchCover(isbn: string, slug: string): Promise<string | null> {
   }
 }
 
+// Fetch a site favicon via Google's favicon service into public/assets/favicons,
+// keyed by slug so it only downloads once and gets committed with the repo.
+async function fetchFavicon(url: string, slug: string): Promise<string | null> {
+  const publicUrl = `/assets/favicons/${slug}.png`
+  const filePath = path.join('public', 'assets', 'favicons', `${slug}.png`)
+  try {
+    await fs.access(filePath)
+    return publicUrl
+  } catch {
+    // Not cached yet, fetch below
+  }
+  try {
+    const domain = new URL(url).hostname
+    const response = await fetch(
+      `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+    )
+    if (!response.ok) {
+      console.warn(`No favicon found for ${domain} (${slug})`)
+      return null
+    }
+    const buffer = Buffer.from(await response.arrayBuffer())
+    // Google serves a generic globe placeholder for unknown domains
+    if (buffer.length < 100) return null
+    await fs.mkdir(path.dirname(filePath), { recursive: true })
+    await fs.writeFile(filePath, buffer)
+    return publicUrl
+  } catch (error) {
+    console.warn(`Failed to fetch favicon for ${url} (${slug})`, error)
+    return null
+  }
+}
+
 const posts = defineCollection({
   name: 'posts',
   directory: 'content/posts',
@@ -150,8 +182,29 @@ const books = defineCollection({
   },
 })
 
+const links = defineCollection({
+  name: 'links',
+  directory: 'content/links',
+  include: '**/*.mdx',
+  schema: z.object({
+    title: z.string(),
+    url: z.url(),
+    date: z.string(),
+    content: z.string(),
+  }),
+  transform: async (document) => {
+    const favicon = await fetchFavicon(document.url, document._meta.path)
+    return {
+      ...document,
+      note: document.content.trim(),
+      domain: new URL(document.url).hostname.replace(/^www\./, ''),
+      favicon,
+    }
+  },
+})
+
 export default defineConfig({
-  content: [posts, books],
+  content: [posts, books, links],
 })
 
 // Helper function to convert TOC AST to serializable object

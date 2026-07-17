@@ -1,11 +1,11 @@
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
 
+import { proseMdxComponents } from '@/components/prose-mdx-components'
 import { TableOfContents } from '@/components/TableOfContents'
 import { buttonVariants } from '@/components/ui/button'
 import { seo } from '@/lib/seo'
 import { cn, formatDate } from '@/lib/utils'
-import { proseMdxComponents } from '@/components/prose-mdx-components'
 import { MDXContent } from '@content-collections/mdx/react'
 import { allPosts } from 'content-collections'
 
@@ -45,7 +45,7 @@ function RouteComponent() {
         to="/articles"
         className={cn(
           buttonVariants({ variant: 'ghost' }),
-          'absolute top-0 left-[-200px] hidden xl:inline-flex',
+          'absolute top-0 -left-50 hidden xl:inline-flex',
         )}
       >
         <ChevronLeft className="mr-2 h-4 w-4" />

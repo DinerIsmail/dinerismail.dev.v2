@@ -7,7 +7,7 @@ export const Route = createFileRoute('/books/')({
   head: () => ({
     meta: [
       ...seo({
-        title: 'Books | Diner Ismail',
+        title: 'Book notes | Diner Ismail',
         description:
           'Notes, thoughts and highlights from books I have been reading.',
       }),

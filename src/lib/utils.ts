@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-import { allBooks, allPosts } from 'content-collections'
+import { allBooks, allLinks, allPosts } from 'content-collections'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -24,7 +24,12 @@ export const sortedBooks = allBooks.toSorted(
   (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
 )
 
+export const sortedLinks = allLinks.toSorted(
+  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+)
+
 export const lastFivePosts = sortedPosts.slice(0, 4)
 
 export type Posts = typeof allPosts
 export type Books = typeof allBooks
+export type Links = typeof allLinks
