@@ -41,17 +41,6 @@ function RouteComponent() {
   const { post } = Route.useLoaderData()
   return (
     <section className="relative">
-      <Link
-        to="/articles"
-        className={cn(
-          buttonVariants({ variant: 'ghost' }),
-          'absolute top-0 -left-50 hidden xl:inline-flex',
-        )}
-      >
-        <ChevronLeft className="mr-2 h-4 w-4" />
-        See all posts
-      </Link>
-
       <article className="prose-ui max-w-3xl">
         <div className="mb-8">
           <h1 className="font-heading inline-block text-4xl leading-tight lg:text-5xl">
@@ -75,7 +64,7 @@ function RouteComponent() {
             className={cn(buttonVariants({ variant: 'ghost' }))}
           >
             <ChevronLeft className="mr-2 h-4 w-4" />
-            See all posts
+            Back
           </Link>
         </div>
       </article>

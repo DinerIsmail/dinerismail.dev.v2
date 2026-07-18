@@ -9,7 +9,7 @@ export const Route = createFileRoute('/links/')({
       ...seo({
         title: 'Links | Diner Ismail',
         description:
-          'Interesting things I have read around the web, with a note on why they are worth your time.',
+          'Links to articles, videos, and podcasts I value and want to revisit. You might find them helpful too.',
       }),
     ],
   }),
@@ -21,8 +21,8 @@ function RouteComponent() {
     <>
       <h2 className="mb-4 text-2xl font-semibold">Links</h2>
       <p className="text-muted-foreground mb-8">
-        Interesting things I&apos;ve read around the web, with a note on why
-        they&apos;re worth your time.
+        Links to articles, videos and podcasts I value and want to revisit. You
+        might like them too.
       </p>
       <section className="flex w-full flex-col items-start gap-4">
         <ul className="group/list flex w-full flex-col gap-8 md:gap-10">

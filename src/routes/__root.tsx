@@ -5,6 +5,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import { MouseGlow } from '@/components/MouseGlow'
+import Sidebar from '@/components/Sidebar'
 
 import appCss from '../styles.css?url'
 
@@ -41,10 +42,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="relative">
         <MouseGlow>
-          <div className="mx-auto max-w-3xl px-4 lg:px-0">
-            <Header />
-            {children}
-            <Footer />
+          <div className="mx-auto flex min-h-dvh max-w-6xl">
+            <Sidebar />
+            <div className="min-w-0 flex-1">
+              <main className="mx-auto max-w-3xl px-4 lg:mx-0 lg:px-12 lg:pt-8">
+                <Header />
+                {children}
+                <Footer />
+              </main>
+            </div>
           </div>
         </MouseGlow>
         <TanStackDevtools

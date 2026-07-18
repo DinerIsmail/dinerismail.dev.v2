@@ -1,11 +1,11 @@
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 import { ChevronLeft, Star } from 'lucide-react'
 
+import { proseMdxComponents } from '@/components/prose-mdx-components'
 import { TableOfContents } from '@/components/TableOfContents'
 import { buttonVariants } from '@/components/ui/button'
 import { seo } from '@/lib/seo'
 import { cn, formatDate } from '@/lib/utils'
-import { proseMdxComponents } from '@/components/prose-mdx-components'
 import { MDXContent } from '@content-collections/mdx/react'
 import { allBooks } from 'content-collections'
 
@@ -41,17 +41,6 @@ function RouteComponent() {
   const { book } = Route.useLoaderData()
   return (
     <section className="relative">
-      <Link
-        to="/books"
-        className={cn(
-          buttonVariants({ variant: 'ghost' }),
-          'absolute top-0 -left-50 hidden xl:inline-flex',
-        )}
-      >
-        <ChevronLeft className="mr-2 h-4 w-4" />
-        See all books
-      </Link>
-
       <article className="prose-ui max-w-3xl">
         <div className="mb-8 flex flex-row items-start gap-6">
           {book.coverImage && (
@@ -102,7 +91,7 @@ function RouteComponent() {
             className={cn(buttonVariants({ variant: 'ghost' }))}
           >
             <ChevronLeft className="mr-2 h-4 w-4" />
-            See all books
+            Back
           </Link>
         </div>
       </article>
