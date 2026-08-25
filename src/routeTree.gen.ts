@@ -10,31 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as NowIndexRouteImport } from './routes/now/index'
-import { Route as LinksIndexRouteImport } from './routes/links/index'
-import { Route as BooksIndexRouteImport } from './routes/books/index'
 import { Route as ArticlesIndexRouteImport } from './routes/articles/index'
-import { Route as BooksSlugRouteImport } from './routes/books/$slug'
 import { Route as ArticlesSlugRouteImport } from './routes/articles/$slug'
+import { Route as BooksIndexRouteImport } from './routes/books/index'
+import { Route as BooksSlugRouteImport } from './routes/books/$slug'
+import { Route as LinksIndexRouteImport } from './routes/links/index'
+import { Route as NowIndexRouteImport } from './routes/now/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NowIndexRoute = NowIndexRouteImport.update({
-  id: '/now/',
-  path: '/now/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LinksIndexRoute = LinksIndexRouteImport.update({
-  id: '/links/',
-  path: '/links/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BooksIndexRoute = BooksIndexRouteImport.update({
-  id: '/books/',
-  path: '/books/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
@@ -42,14 +27,29 @@ const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
   path: '/articles/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
+  id: '/articles/$slug',
+  path: '/articles/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BooksIndexRoute = BooksIndexRouteImport.update({
+  id: '/books/',
+  path: '/books/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BooksSlugRoute = BooksSlugRouteImport.update({
   id: '/books/$slug',
   path: '/books/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
-  id: '/articles/$slug',
-  path: '/articles/$slug',
+const LinksIndexRoute = LinksIndexRouteImport.update({
+  id: '/links/',
+  path: '/links/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NowIndexRoute = NowIndexRouteImport.update({
+  id: '/now/',
+  path: '/now/',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -130,18 +130,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/now/': {
-      id: '/now/'
-      path: '/now'
-      fullPath: '/now/'
-      preLoaderRoute: typeof NowIndexRouteImport
+    '/articles/': {
+      id: '/articles/'
+      path: '/articles'
+      fullPath: '/articles/'
+      preLoaderRoute: typeof ArticlesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/links/': {
-      id: '/links/'
-      path: '/links'
-      fullPath: '/links/'
-      preLoaderRoute: typeof LinksIndexRouteImport
+    '/articles/$slug': {
+      id: '/articles/$slug'
+      path: '/articles/$slug'
+      fullPath: '/articles/$slug'
+      preLoaderRoute: typeof ArticlesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/books/': {
@@ -151,13 +151,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BooksIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/articles/': {
-      id: '/articles/'
-      path: '/articles'
-      fullPath: '/articles/'
-      preLoaderRoute: typeof ArticlesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/books/$slug': {
       id: '/books/$slug'
       path: '/books/$slug'
@@ -165,11 +158,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BooksSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/articles/$slug': {
-      id: '/articles/$slug'
-      path: '/articles/$slug'
-      fullPath: '/articles/$slug'
-      preLoaderRoute: typeof ArticlesSlugRouteImport
+    '/links/': {
+      id: '/links/'
+      path: '/links'
+      fullPath: '/links/'
+      preLoaderRoute: typeof LinksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/now/': {
+      id: '/now/'
+      path: '/now'
+      fullPath: '/now/'
+      preLoaderRoute: typeof NowIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
