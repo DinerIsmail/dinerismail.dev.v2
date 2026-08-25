@@ -1,4 +1,12 @@
-import { defineCollection, defineConfig } from '@content-collections/core'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
+import {
+  defineCollection,
+  defineConfig,
+  type Context,
+  type Meta,
+} from '@content-collections/core'
 import { compileMDX } from '@content-collections/mdx'
 import { remarkPlugins } from '@prose-ui/core'
 import {
@@ -14,6 +22,154 @@ import rehypeSlug from 'rehype-slug'
 import { remark } from 'remark'
 import * as z from 'zod'
 
+type MdxDocument = { content: string; _meta: Meta }
+
+async function transformMdx<T extends MdxDocument>(
+  document: T,
+  context: Context,
+) {
+  // Parse markdown to extract TOC before compilation
+  const processor = remark()
+  const tree = processor.parse(document.content)
+  const tableOfContents = toc(tree)
+
+  // Compile MDX as usual
+  const mdx = await compileMDX(context, document, {
+    remarkPlugins: remarkPlugins(),
+    rehypePlugins: [
+      rehypeSlug,
+      [
+        rehypePrettyCode,
+        {
+          theme: 'material-theme-palenight',
+          transformers: [
+            transformerMetaHighlight(),
+            transformerMetaWordHighlight(),
+            transformerNotationDiff({
+              matchAlgorithm: 'v3',
+            }),
+          ],
+          onVisitLine(node: any) {
+            // Prevent lines from collapsing in `display: grid` mode, and allow empty
+            // lines to be copy/pasted
+            if (node.children.length === 0) {
+              node.children = [{ type: 'text', value: ' ' }]
+            }
+          },
+          onVisitHighlightedLine(node: any) {
+            node.properties.className.push('line--highlighted')
+          },
+          onVisitHighlightedWord(node: any) {
+            node.properties.className = ['word--highlighted']
+          },
+        },
+      ],
+      [
+        rehypeAutolinkHeadings,
+        {
+          properties: {
+            className: ['subheading-anchor'],
+            ariaLabel: 'Link to section',
+          },
+        },
+      ],
+    ],
+  })
+
+  return {
+    ...document,
+    mdx,
+    readingTime: readingTime(document.content).text,
+    toc: tableOfContents.map ? tocToPlainObject(tableOfContents.map) : null,
+  }
+}
+
+// Download a cover image into public/assets/covers, keyed by slug so it only
+// downloads once and gets committed with the repo.
+async function downloadCover(
+  url: string,
+  slug: string,
+  label: string,
+): Promise<string | null> {
+  const publicUrl = `/assets/covers/${slug}.jpg`
+  const filePath = path.join('public', 'assets', 'covers', `${slug}.jpg`)
+  try {
+    await fs.access(filePath)
+    return publicUrl
+  } catch {
+    // Not cached yet, fetch below
+  }
+  try {
+    const response = await fetch(url)
+    if (!response.ok) {
+      console.warn(`No cover found for ${label} (${slug})`)
+      return null
+    }
+    const buffer = Buffer.from(await response.arrayBuffer())
+    // Open Library occasionally serves a tiny placeholder instead of a 404
+    if (buffer.length < 1000) return null
+    await fs.mkdir(path.dirname(filePath), { recursive: true })
+    await fs.writeFile(filePath, buffer)
+    return publicUrl
+  } catch (error) {
+    console.warn(`Failed to fetch cover for ${label} (${slug})`, error)
+    return null
+  }
+}
+
+// Resolve a book cover: an explicit `cover` in frontmatter wins (a remote URL is
+// downloaded and cached, a local path is used as-is), otherwise fall back to the
+// Open Library Covers API keyed by ISBN.
+async function resolveCover(
+  document: { isbn?: string; cover?: string },
+  slug: string,
+): Promise<string | null> {
+  if (document.cover) {
+    if (!/^https?:\/\//.test(document.cover)) return document.cover
+    return downloadCover(document.cover, slug, document.cover)
+  }
+  if (document.isbn) {
+    return downloadCover(
+      `https://covers.openlibrary.org/b/isbn/${document.isbn}-L.jpg?default=false`,
+      slug,
+      `ISBN ${document.isbn}`,
+    )
+  }
+  return null
+}
+
+// Fetch a site favicon via Google's favicon service into public/assets/favicons,
+// keyed by slug so it only downloads once and gets committed with the repo.
+async function fetchFavicon(url: string, slug: string): Promise<string | null> {
+  const publicUrl = `/assets/favicons/${slug}.png`
+  const filePath = path.join('public', 'assets', 'favicons', `${slug}.png`)
+  try {
+    await fs.access(filePath)
+    return publicUrl
+  } catch {
+    // Not cached yet, fetch below
+  }
+  try {
+    const domain = new URL(url).hostname
+    const response = await fetch(
+      `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+    )
+    if (!response.ok) {
+      console.warn(`No favicon found for ${domain} (${slug})`)
+      return null
+    }
+    const buffer = Buffer.from(await response.arrayBuffer())
+    // Google serves a generic globe placeholder for unknown domains
+    if (buffer.length < 100) return null
+    await fs.mkdir(path.dirname(filePath), { recursive: true })
+    await fs.writeFile(filePath, buffer)
+    return publicUrl
+  } catch (error) {
+    console.warn(`Failed to fetch favicon for ${url} (${slug})`, error)
+    return null
+  }
+}
+
 const posts = defineCollection({
   name: 'posts',
   directory: 'content/posts',
@@ -24,66 +180,55 @@ const posts = defineCollection({
     date: z.string(),
     content: z.string(),
   }),
+  transform: transformMdx,
+})
+
+const books = defineCollection({
+  name: 'books',
+  directory: 'content/books',
+  include: '**/*.mdx',
+  schema: z.object({
+    title: z.string(),
+    author: z.string(),
+    description: z.string(),
+    date: z.string(),
+    content: z.string(),
+    rating: z.number().min(1).max(5).optional(),
+    isbn: z.string().optional(),
+    // Explicit cover URL or local path, for books with no ISBN (self-published
+    // ebooks, or anything Open Library doesn't have)
+    cover: z.string().optional(),
+  }),
   transform: async (document, context) => {
-    // Parse markdown to extract TOC before compilation
-    const processor = remark()
-    const tree = processor.parse(document.content)
-    const tableOfContents = toc(tree)
+    const transformed = await transformMdx(document, context)
+    const coverImage = await resolveCover(document, document._meta.path)
+    return { ...transformed, coverImage }
+  },
+})
 
-    // Compile MDX as usual
-    const mdx = await compileMDX(context, document, {
-      remarkPlugins: remarkPlugins(),
-      rehypePlugins: [
-        rehypeSlug,
-        [
-          rehypePrettyCode,
-          {
-            theme: 'material-theme-palenight',
-            transformers: [
-              transformerMetaHighlight(),
-              transformerMetaWordHighlight(),
-              transformerNotationDiff({
-                matchAlgorithm: 'v3',
-              }),
-            ],
-            onVisitLine(node: any) {
-              // Prevent lines from collapsing in `display: grid` mode, and allow empty
-              // lines to be copy/pasted
-              if (node.children.length === 0) {
-                node.children = [{ type: 'text', value: ' ' }]
-              }
-            },
-            onVisitHighlightedLine(node: any) {
-              node.properties.className.push('line--highlighted')
-            },
-            onVisitHighlightedWord(node: any) {
-              node.properties.className = ['word--highlighted']
-            },
-          },
-        ],
-        [
-          rehypeAutolinkHeadings,
-          {
-            properties: {
-              className: ['subheading-anchor'],
-              ariaLabel: 'Link to section',
-            },
-          },
-        ],
-      ],
-    })
-
+const links = defineCollection({
+  name: 'links',
+  directory: 'content/links',
+  include: '**/*.mdx',
+  schema: z.object({
+    title: z.string(),
+    url: z.url(),
+    date: z.string(),
+    content: z.string(),
+  }),
+  transform: async (document) => {
+    const favicon = await fetchFavicon(document.url, document._meta.path)
     return {
       ...document,
-      mdx,
-      readingTime: readingTime(document.content).text,
-      toc: tableOfContents.map ? tocToPlainObject(tableOfContents.map) : null,
+      note: document.content.trim(),
+      domain: new URL(document.url).hostname.replace(/^www\./, ''),
+      favicon,
     }
   },
 })
 
 export default defineConfig({
-  content: [posts],
+  content: [posts, books, links],
 })
 
 // Helper function to convert TOC AST to serializable object
