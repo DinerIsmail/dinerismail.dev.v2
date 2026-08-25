@@ -84,9 +84,13 @@ async function transformMdx<T extends MdxDocument>(
   }
 }
 
-// Fetch a book cover from the Open Library Covers API into public/assets/covers,
-// keyed by slug so it only downloads once and gets committed with the repo.
-async function fetchCover(isbn: string, slug: string): Promise<string | null> {
+// Download a cover image into public/assets/covers, keyed by slug so it only
+// downloads once and gets committed with the repo.
+async function downloadCover(
+  url: string,
+  slug: string,
+  label: string,
+): Promise<string | null> {
   const publicUrl = `/assets/covers/${slug}.jpg`
   const filePath = path.join('public', 'assets', 'covers', `${slug}.jpg`)
   try {
@@ -96,11 +100,9 @@ async function fetchCover(isbn: string, slug: string): Promise<string | null> {
     // Not cached yet, fetch below
   }
   try {
-    const response = await fetch(
-      `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false`,
-    )
+    const response = await fetch(url)
     if (!response.ok) {
-      console.warn(`No Open Library cover found for ISBN ${isbn} (${slug})`)
+      console.warn(`No cover found for ${label} (${slug})`)
       return null
     }
     const buffer = Buffer.from(await response.arrayBuffer())
@@ -110,9 +112,30 @@ async function fetchCover(isbn: string, slug: string): Promise<string | null> {
     await fs.writeFile(filePath, buffer)
     return publicUrl
   } catch (error) {
-    console.warn(`Failed to fetch cover for ISBN ${isbn} (${slug})`, error)
+    console.warn(`Failed to fetch cover for ${label} (${slug})`, error)
     return null
   }
+}
+
+// Resolve a book cover: an explicit `cover` in frontmatter wins (a remote URL is
+// downloaded and cached, a local path is used as-is), otherwise fall back to the
+// Open Library Covers API keyed by ISBN.
+async function resolveCover(
+  document: { isbn?: string; cover?: string },
+  slug: string,
+): Promise<string | null> {
+  if (document.cover) {
+    if (!/^https?:\/\//.test(document.cover)) return document.cover
+    return downloadCover(document.cover, slug, document.cover)
+  }
+  if (document.isbn) {
+    return downloadCover(
+      `https://covers.openlibrary.org/b/isbn/${document.isbn}-L.jpg?default=false`,
+      slug,
+      `ISBN ${document.isbn}`,
+    )
+  }
+  return null
 }
 
 // Fetch a site favicon via Google's favicon service into public/assets/favicons,
@@ -172,12 +195,13 @@ const books = defineCollection({
     content: z.string(),
     rating: z.number().min(1).max(5).optional(),
     isbn: z.string().optional(),
+    // Explicit cover URL or local path, for books with no ISBN (self-published
+    // ebooks, or anything Open Library doesn't have)
+    cover: z.string().optional(),
   }),
   transform: async (document, context) => {
     const transformed = await transformMdx(document, context)
-    const coverImage = document.isbn
-      ? await fetchCover(document.isbn, document._meta.path)
-      : null
+    const coverImage = await resolveCover(document, document._meta.path)
     return { ...transformed, coverImage }
   },
 })
