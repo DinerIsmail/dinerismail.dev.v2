@@ -26,6 +26,9 @@ h4,
 h5,
 h6 {
   font-family: 'Cal Sans', system-ui, sans-serif !important;
+  /* Match the Cal Sans v1 look (v2 defaults to the lighter "UI Regular" style) */
+  font-weight: 700 !important;
+  font-variation-settings: 'GEOM' 50, 'opsz' 45;
   letter-spacing: 1px !important;
 }
 
