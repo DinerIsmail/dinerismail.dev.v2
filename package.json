@@ -9,7 +9,8 @@
     "format": "prettier --write .",
     "lint": "oxlint src/",
     "check": "oxlint src/ && tsc --noEmit",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "highlights": "node scripts/kindle-highlights.mjs"
   },
   "dependencies": {
     "@fontsource-variable/montserrat": "5.3.0",

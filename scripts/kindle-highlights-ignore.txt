@@ -1,0 +1,7 @@
+# Books to skip when exporting Kindle highlights (npm run highlights).
+# One per line: part of the title or the slug, case doesn't matter.
+choosing-easy-world
+harry-potter
+tomorrow-and-tomorrow
+time-surfing
+postnatal-depletion
