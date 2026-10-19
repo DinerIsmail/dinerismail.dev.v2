@@ -3,7 +3,7 @@ import { ChevronLeft, Star } from 'lucide-react'
 
 import { proseMdxComponents } from '@/components/prose-mdx-components'
 import { TableOfContents } from '@/components/TableOfContents'
-import { buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button-variants'
 import { seo } from '@/lib/seo'
 import { cn, formatDate } from '@/lib/utils'
 import { MDXContent } from '@content-collections/mdx/react'
