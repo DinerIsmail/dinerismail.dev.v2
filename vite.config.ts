@@ -10,7 +10,9 @@ import viteTsConfigPaths from 'vite-tsconfig-paths'
 const config = defineConfig({
   plugins: [
     devtools(),
-    netlify(),
+    netlify({
+      dev: { edgeFunctions: { enabled: false } },
+    }),
     // this is the plugin that enables path aliases
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
