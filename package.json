@@ -27,6 +27,7 @@
     "@tanstack/react-router-devtools": "1.167.2",
     "@tanstack/react-router-ssr-query": "1.167.3",
     "@tanstack/react-start": "1.169.3",
+    "@tanstack/redact": "0.2.1",
     "@tanstack/router-plugin": "1.168.47",
     "cal-sans": "^2.1.1",
     "class-variance-authority": "^0.7.1",
