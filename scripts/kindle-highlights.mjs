@@ -16,6 +16,12 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { parseArgs } from 'node:util'
+import {
+  selectBooks,
+  slugify,
+  toMarkdown,
+  writeBooks,
+} from './lib/highlights.mjs'
 
 const { values: args } = parseArgs({
   options: {
@@ -33,30 +39,6 @@ const IGNORE_FILE = path.join(
   import.meta.dirname,
   'kindle-highlights-ignore.txt',
 )
-
-// Matches part of a book's title or its slug, ignoring case
-const matches = (slug, book, term) =>
-  book.title.toLowerCase().includes(term.toLowerCase()) ||
-  slug.includes(term.toLowerCase())
-
-// One entry per line; blank lines and # comments are skipped
-async function readIgnoreList() {
-  const raw = await fs.readFile(IGNORE_FILE, 'utf8').catch(() => '')
-  return raw
-    .split('\n')
-    .map((line) => line.replace(/#.*/, '').trim())
-    .filter(Boolean)
-}
-
-function slugify(text) {
-  return text
-    .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/['’]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-}
 
 // "Title (Author)" -> { title, author }. The author is the last parenthesised
 // group, since titles can contain parentheses too.
@@ -123,7 +105,7 @@ function dedupeHighlights(highlights) {
   )
 }
 
-function toMarkdown(book) {
+function bookToMarkdown(book) {
   const highlights = dedupeHighlights(
     book.clips.filter((clip) => clip.type === 'highlight'),
   ).sort((a, b) => a.start - b.start || a.index - b.index)
@@ -136,29 +118,17 @@ function toMarkdown(book) {
     const target = highlights.findLast(
       (h) => h.start <= note.start && note.start <= h.end,
     )
-    if (target) attached.set(target, [...(attached.get(target) ?? []), note])
-    else loose.push(note)
+    if (target)
+      attached.set(target, [...(attached.get(target) ?? []), note.text])
+    else loose.push(note.text)
   }
 
-  const quote = (text) =>
-    text
-      .split('\n')
-      .map((line) => `> ${line}`.trimEnd())
-      .join('\n')
-
-  const sections = highlights.map((h) => {
-    const notesFor = (attached.get(h) ?? []).map(
-      (note) => `*Note: ${note.text}*`,
-    )
-    return [quote(h.text), ...notesFor].join('\n\n')
-  })
-
-  let markdown = `---\ntitle: ${JSON.stringify(book.title)}\nauthor: ${JSON.stringify(book.author)}\n---\n\n## Highlights\n\n${sections.join('\n\n')}\n`
-  if (loose.length) {
-    markdown += `\n## Notes\n\n${loose.map((note) => `- ${note.text}`).join('\n')}\n`
-  }
   return {
-    markdown,
+    markdown: toMarkdown(
+      book,
+      highlights.map((h) => ({ text: h.text, notes: attached.get(h) ?? [] })),
+      loose,
+    ),
     highlightCount: highlights.length,
     noteCount: notes.length,
   }
@@ -185,52 +155,14 @@ async function main() {
     books.get(slug).clips.push(clip)
   }
 
-  const ignored = await readIgnoreList()
-  const selected = [...books].filter(([slug, book]) => {
-    if (ignored.some((term) => matches(slug, book, term))) {
-      console.log(`Skipping ${book.title} (ignored)`)
-      return false
-    }
-    return !args.book || matches(slug, book, args.book)
+  const selected = await selectBooks(books, {
+    ignoreFile: IGNORE_FILE,
+    book: args.book,
   })
-  if (!selected.length) {
-    console.error(
-      args.book ? `No book matching "${args.book}"` : 'No highlights found',
-    )
-    process.exit(1)
-  }
-
-  const reviewsDir = path.join('content', 'books')
-  const reviewSlugs = await fs.readdir(reviewsDir).catch(() => [])
-  // Review slugs are often shorter than the Kindle title's ("digital-minimalism"
-  // vs "digital-minimalism-choosing-a-focused-life..."), so match on whole-word
-  // prefixes in either direction
-  const isPrefix = (short, long) =>
-    long === short || long.startsWith(`${short}-`)
-  const findReview = (slug) =>
-    reviewSlugs.find(
-      (review) => isPrefix(review, slug) || isPrefix(slug, review),
-    )
-
-  const publishedDir = path.join(args.out, 'published')
-  await fs.mkdir(publishedDir, { recursive: true })
-  for (const [slug, book] of selected) {
-    const { markdown, highlightCount, noteCount } = toMarkdown(book)
-    // Books that already have a review on the site go in published/, and any
-    // copy left over from before the review existed is removed
-    const reviewSlug = findReview(slug)
-    const review = reviewSlug && path.join(reviewsDir, reviewSlug)
-    const isPublished = Boolean(review)
-    const unpublishedFile = path.join(args.out, `${slug}.md`)
-    const file = isPublished
-      ? path.join(publishedDir, `${slug}.md`)
-      : unpublishedFile
-    await fs.writeFile(file, markdown)
-    if (isPublished) await fs.rm(unpublishedFile, { force: true })
-    console.log(
-      `${file}  (${highlightCount} highlights, ${noteCount} notes)${isPublished ? `  -> review: ${review}` : ''}`,
-    )
-  }
+  await writeBooks(
+    selected.map(([slug, book]) => [slug, bookToMarkdown(book)]),
+    args.out,
+  )
 }
 
 main()

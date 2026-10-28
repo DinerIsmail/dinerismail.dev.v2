@@ -1,302 +1,82 @@
-Welcome to your new TanStack app! 
+# dinerismail.dev
 
-# Getting Started
+My personal site, built with [TanStack Start](https://tanstack.com/start) and deployed on Netlify.
 
-To run this application:
+## Development
 
 ```bash
 npm install
-npm run start
-```
-
-# Building For Production
-
-To build this application for production:
-
-```bash
+npm run dev      # http://localhost:3000
 npm run build
+npm run preview  # serve the production build
 ```
-
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-
-## Linting & Formatting
-
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
-
 
 ```bash
-npm run lint
-npm run format
-npm run check
+npm run format   # Prettier
+npm run lint     # oxlint
+npm run check    # oxlint + type check
 ```
 
+Content lives in `content/`: `posts/`, `links/` and `books/` (book reviews).
 
-## Shadcn
+For notes on TanStack Router, data loading, Query, Store and shadcn, see [docs/tanstack-reference.md](docs/tanstack-reference.md).
 
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
+## Book highlights
+
+Two scripts export my book highlights to markdown, one file per book, to help with writing book reviews. Both write to `highlights/`, which is gitignored:
+
+- `highlights/<book>.md` for books without a review yet
+- `highlights/published/<book>.md` for books that already have a review in `content/books/`. When a review is added, the next export moves the book's file here.
+
+Each file has the title and author in front matter, then the highlights as quotes with any notes underneath.
+
+Both scripts take the same options:
+
+| Option          | Default      | Description                                   |
+| --------------- | ------------ | --------------------------------------------- |
+| `--book <term>` |              | Only export books whose title or slug matches |
+| `--out <dir>`   | `highlights` | Where to write the files                      |
+
+To skip books for good, add part of the title or the slug to the script's ignore file, one per line (`#` starts a comment).
+
+If a book is in both Kindle and Play Books under the same title, whichever export runs last overwrites the other.
+
+### Kindle
 
 ```bash
-pnpm dlx shadcn@latest add button
+npm run highlights
+npm run highlights -- --book "you are here"
 ```
 
+Plug the Kindle in over USB first. The script reads `My Clippings.txt` from the device, which includes highlights from sideloaded and Send to Kindle books that Amazon's online notebook doesn't show. If the Kindle isn't mounted at `/Volumes/Kindle`, pass `--clippings <path>` with the path to `My Clippings.txt`.
 
+- Ignore file: `scripts/kindle-highlights-ignore.txt`
+- If macOS refuses access, allow your terminal under System Settings → Privacy & Security → Files & Folders → Removable Volumes, then restart the terminal.
 
-## Routing
-This project uses [TanStack Router](https://tanstack.com/router). The initial setup is a file based router. Which means that the routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add another a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you use the `<Outlet />` component.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
-import { Link } from "@tanstack/react-router";
-
-export const Route = createRootRoute({
-  component: () => (
-    <>
-      <header>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
-})
-```
-
-The `<TanStackRouterDevtools />` component is not required so you can remove it if you don't want it in your layout.
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-const peopleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/people",
-  loader: async () => {
-    const response = await fetch("https://swapi.dev/api/people");
-    return response.json() as Promise<{
-      results: {
-        name: string;
-      }[];
-    }>;
-  },
-  component: () => {
-    const data = peopleRoute.useLoaderData();
-    return (
-      <ul>
-        {data.results.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    );
-  },
-});
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-### React-Query
-
-React-Query is an excellent addition or alternative to route loading and integrating it into you application is a breeze.
-
-First add your dependencies:
+### Google Play Books
 
 ```bash
-npm install @tanstack/react-query @tanstack/react-query-devtools
+npm run highlights:play-books
+npm run highlights:play-books -- --book "mate"
 ```
 
-Next we'll need to create a query client and provider. We recommend putting those in `main.tsx`.
+With **Save notes, highlights and bookmarks in Google Drive** turned on in the Play Books settings, Play Books keeps a Google Doc per book (`Notes from "<title>"`) in a `Play Books Notes` folder on Drive. The script reads those docs through the Google Drive and Docs APIs. The `.gdoc` files that Drive for desktop syncs only contain a link to each doc, not the highlights.
 
-```tsx
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+- Ignore file: `scripts/play-books-highlights-ignore.txt`. Use this instead of deleting a book's `.gdoc` file, which deletes the doc on Drive.
+- `--folder <name>` reads a folder with another name (default `Play Books Notes`).
+- `--credentials <path>` uses OAuth client credentials from somewhere else (default `~/.config/play-books-highlights/credentials.json`).
 
-// ...
+#### One-time setup
 
-const queryClient = new QueryClient();
+Do these steps in the Google Cloud Console while signed in to the Google account that owns the Play Books notes:
 
-// ...
+1. [Create a project](https://console.cloud.google.com/projectcreate).
+2. Enable the [Google Drive API](https://console.cloud.google.com/apis/library/drive.googleapis.com) and the [Google Docs API](https://console.cloud.google.com/apis/library/docs.googleapis.com).
+3. In [Google Auth Platform](https://console.cloud.google.com/auth/overview), set up the consent screen with audience **External**, then add your account under **Audience → Test users**.
+4. [Create an OAuth client](https://console.cloud.google.com/auth/clients) of type **Desktop app** and download its JSON:
+   ```bash
+   mkdir -p ~/.config/play-books-highlights
+   mv ~/Downloads/client_secret_*.json ~/.config/play-books-highlights/credentials.json
+   ```
 
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  );
-}
-```
-
-You can also add TanStack Query Devtools to the root route (optional).
-
-```tsx
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
-      <TanStackRouterDevtools />
-    </>
-  ),
-});
-```
-
-Now you can use `useQuery` to fetch your data.
-
-```tsx
-import { useQuery } from "@tanstack/react-query";
-
-import "./App.css";
-
-function App() {
-  const { data } = useQuery({
-    queryKey: ["people"],
-    queryFn: () =>
-      fetch("https://swapi.dev/api/people")
-        .then((res) => res.json())
-        .then((data) => data.results as { name: string }[]),
-    initialData: [],
-  });
-
-  return (
-    <div>
-      <ul>
-        {data.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-export default App;
-```
-
-You can find out everything you need to know on how to use React-Query in the [React-Query documentation](https://tanstack.com/query/latest/docs/framework/react/overview).
-
-## State Management
-
-Another common requirement for React applications is state management. There are many options for state management in React. TanStack Store provides a great starting point for your project.
-
-First you need to add TanStack Store as a dependency:
-
-```bash
-npm install @tanstack/store
-```
-
-Now let's create a simple counter in the `src/App.tsx` file as a demonstration.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-function App() {
-  const count = useStore(countStore);
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-    </div>
-  );
-}
-
-export default App;
-```
-
-One of the many nice features of TanStack Store is the ability to derive state from other state. That derived state will update when the base state updates.
-
-Let's check this out by doubling the count using derived state.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store, Derived } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-const doubledStore = new Derived({
-  fn: () => countStore.state * 2,
-  deps: [countStore],
-});
-doubledStore.mount();
-
-function App() {
-  const count = useStore(countStore);
-  const doubledCount = useStore(doubledStore);
-
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-      <div>Doubled - {doubledCount}</div>
-    </div>
-  );
-}
-
-export default App;
-```
-
-We use the `Derived` class to create a new store that is derived from another store. The `Derived` class has a `mount` method that will start the derived store updating.
-
-Once we've created the derived store we can use it in the `App` component just like we would any other store using the `useStore` hook.
-
-You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+The first run opens the browser to sign in. Google warns that the app isn't verified; it's your own app, so continue. The script asks for read-only access to your Drive and saves the sign-in to `~/.config/play-books-highlights/token.json`. While the app is in Testing mode, Google expires the sign-in after 7 days and the browser opens again on the next run.
