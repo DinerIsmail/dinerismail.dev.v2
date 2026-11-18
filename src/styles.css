@@ -79,6 +79,8 @@ h1:first-of-type {
   --p-h3-font-family: 'Cal Sans', system-ui, sans-serif;
   --p-font-family-mono: 'Source Code Pro', monospace;
   --default-mono-font-family: 'Source Code Pro', monospace;
+
+  --quote-mark: oklch(0.15 0.01 285 / 0.18);
 }
 
 .dark {
@@ -114,6 +116,40 @@ h1:first-of-type {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.274 0.006 286.033);
   --sidebar-ring: oklch(0.442 0.017 285.786);
+
+  --quote-mark: oklch(0.77 0.15 163 / 0.55);
+}
+
+/* Quotes and book highlights: upright serif text with a hanging quote mark
+   instead of Prose UI's italic text and left border */
+.prose-ui blockquote.blockquote {
+  --p-blockquote-font-style: normal;
+  --p-blockquote-font-size: 1.0625rem;
+  --p-blockquote-font-height: 1.75;
+  position: relative;
+  margin-top: 2.25rem;
+  margin-bottom: 2.25rem;
+  border: none;
+  padding: 0 0 0 2.5rem;
+  font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  color: color-mix(in oklch, var(--foreground) 85%, transparent);
+}
+
+.prose-ui blockquote.blockquote::before {
+  content: '\201C';
+  position: absolute;
+  top: -0.6rem;
+  left: 0;
+  font-family: Georgia, serif;
+  font-size: 3.75rem;
+  line-height: 1;
+  color: var(--quote-mark);
+  pointer-events: none;
+}
+
+.prose-ui blockquote.blockquote p {
+  font-family: inherit;
+  color: inherit;
 }
 
 @theme inline {
