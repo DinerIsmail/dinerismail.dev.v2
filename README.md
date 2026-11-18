@@ -41,6 +41,17 @@ To skip books for good, add part of the title or the slug to the script's ignore
 
 If a book is in both Kindle and Play Books under the same title, whichever export runs last overwrites the other.
 
+### Publishing a review
+
+```bash
+npm run highlights:publish -- --book "deep work"
+npm run highlights:publish -- --book "deep work" --slug deep-work
+```
+
+Creates `content/books/<slug>/index.mdx` from the book's file in `highlights/`, with the review front matter, an empty `## Thoughts` section and the highlights, then moves the file to `highlights/published/`. The slug defaults to the title without its subtitle. Fill in the description and your thoughts, uncomment `rating` and `isbn` or `cover`, and trim the highlights.
+
+A custom `--slug` should still be a whole-word prefix of the highlights file's slug. Otherwise the next export won't link the book to its review and writes it back to `highlights/` as unpublished.
+
 ### Kindle
 
 ```bash
